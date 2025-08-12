@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
+import { Button } from "@headlessui/react";
 
 
 export default function NavbarAdmin() {
@@ -108,15 +109,15 @@ export default function NavbarAdmin() {
             </div>
 
             {/* Logout Button */}
-            <Link
-              href={route('logout')}              
+            <Button
+              onClick={handleLogout}
               className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
               <span className="hidden sm:block">Logout</span>
-            </Link>
+            </Button>
           </div>
         </div>
 

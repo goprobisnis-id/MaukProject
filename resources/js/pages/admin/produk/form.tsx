@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import NavbarAdmin from "@/components/navbarAdmin";
+import Modal from "@/components/ui/modal";
 import { useForm, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Save, X, Upload, Image, Tag, Sparkles, ArrowLeft, FileImage, ShoppingBag, DollarSign, Link, FileText, Hash, Palette, Ruler } from 'lucide-react';
@@ -51,7 +52,7 @@ interface ColorItem {
 }
 
 // Interface untuk form data yang akan dikirim
-interface FormData {
+interface ProdukFormData {
     nama_produk: string;
     harga: number;
     kategori_id: number;
@@ -65,24 +66,25 @@ interface FormData {
     size: string[];
     color: string[];
     hex_code: string[];
+    [key: string]: any; // Index signature untuk kompatibilitas dengan Inertia.js
 }
 
 export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps) {
     const isEditMode = mode === 'edit';
     const formTitle = isEditMode ? 'Edit Produk' : 'Tambah Produk';
 
-    // Menggunakan interface FormData untuk typing yang tepat
-    const { data, setData, post, put, processing, errors } = useForm<FormData>({
+    // Menggunakan Record<string, any> untuk kompatibilitas dengan Inertia.js
+    const { data, setData, post, put, processing, errors } = useForm({
         nama_produk: produk?.nama_produk ?? '',
         harga: produk?.harga ?? 0,
         kategori_id: produk?.kategori_id ?? kategoris[0]?.id ?? 0,
-        first_image: null,
+        first_image: null as any,
         link_shopee: produk?.link_shopee ?? '',
         link_tokped: produk?.link_tokped ?? '',
         short_desc: produk?.short_desc ?? '',
         long_desc: produk?.long_desc ?? '',
         jumlah_pembelian: produk?.jumlah_pembelian ?? 0,
-        image: [],
+        image: [] as any,
         size: produk?.sizes?.map((s: ProdukSize) => s.size) ?? [],
         color: produk?.colors?.map((c: ProdukColor) => c.color_name) ?? [],
         hex_code: produk?.colors?.map((c: ProdukColor) => c.hex_code) ?? [],
@@ -94,19 +96,85 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
         produk?.colors?.map((c: ProdukColor) => ({ color: c.color_name, hex: c.hex_code })) ?? [{ color: '', hex: '' }]
     );
 
+    // Modal state
+    const [modal, setModal] = useState({
+        isOpen: false,
+        type: 'success' as 'success' | 'error' | 'warning',
+        title: '',
+        message: '',
+        details: [] as string[]
+    });
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isEditMode && produk?.id) {
-            put(`/admin/produk/${produk.id}`, {
-                preserveScroll: true,
-                forceFormData: true,
-            });
-        } else {
-            post('/admin/produk', {
-                preserveScroll: true,
-                forceFormData: true,
-            });
-        }
+        
+        // Siapkan data yang akan dikirim dengan size dan color terbaru
+        const filteredSizes = sizes.filter(size => size.trim() !== '');
+        const filteredColors = colors.map(c => c.color).filter(color => color.trim() !== '');
+        const filteredHexCodes = colors.map(c => c.hex).filter(hex => hex.trim() !== '');
+
+        // Update data dengan nilai terbaru
+        const finalData = {
+            ...data,
+            size: filteredSizes,
+            color: filteredColors,
+            hex_code: filteredHexCodes
+        };
+
+        // Debug log
+        console.log('Sending data:', finalData);
+        console.log('Is Edit Mode:', isEditMode);
+
+        const submitOptions = {
+            preserveScroll: true,
+            forceFormData: true,
+            onSuccess: () => {
+                setModal({
+                    isOpen: true,
+                    type: 'success',
+                    title: 'Berhasil!',
+                    message: isEditMode 
+                        ? 'Data produk berhasil diperbarui.'
+                        : 'Produk baru berhasil ditambahkan.',
+                    details: []
+                });
+            },
+            onError: (errors: any) => {
+                console.log('Error response:', errors);
+                const errorDetails = Object.values(errors).flat() as string[];
+                setModal({
+                    isOpen: true,
+                    type: 'error',
+                    title: 'Gagal!',
+                    message: isEditMode 
+                        ? 'Gagal memperbarui data produk.'
+                        : 'Gagal menambahkan produk baru.',
+                    details: errorDetails
+                });
+            }
+        };
+
+        // Update form data terlebih dahulu
+        setData(prev => ({
+            ...prev,
+            size: filteredSizes,
+            color: filteredColors,
+            hex_code: filteredHexCodes
+        }));
+
+        // Submit setelah data ter-update
+        setTimeout(() => {
+            if (isEditMode && produk?.id) {
+                // Untuk edit, gunakan router.post dengan method spoofing
+                router.post(`/admin/produk/${produk.id}`, {
+                    ...finalData,
+                    _method: 'PUT'
+                }, submitOptions);
+            } else {
+                // Untuk create, gunakan post biasa  
+                post('/admin/produk', submitOptions);
+            }
+        }, 50);
     };
 
     const addSizeField = () => {
@@ -128,6 +196,15 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
         setColors(newColors);
         setData('color', newColors.map((c: ColorItem) => c.color));
         setData('hex_code', newColors.map((c: ColorItem) => c.hex));
+    };
+
+    const handleCloseModal = () => {
+        setModal({ ...modal, isOpen: false });
+        
+        // Jika berhasil, redirect ke halaman produk
+        if (modal.type === 'success') {
+            router.visit('/admin/produk');
+        }
     };
 
     return (
@@ -183,7 +260,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             id="nama_produk"
                                             value={data.nama_produk}
                                             onChange={e => setData('nama_produk', e.target.value)}
-                                            required
+                                            required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
                                             placeholder="Masukkan nama produk..."
                                         />
@@ -191,7 +268,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             <Tag className="h-5 w-5 text-emerald-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
                                         </div>
                                     </div>
-                                    {errors.nama_produk && (
+                                    {errors.nama_produk && !isEditMode && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -216,7 +293,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             id="harga"
                                             value={data.harga}
                                             onChange={e => setData('harga', Number(e.target.value))}
-                                            required
+                                            required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
                                             placeholder="0"
                                         />
@@ -224,7 +301,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             <DollarSign className="h-5 w-5 text-emerald-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
                                         </div>
                                     </div>
-                                    {errors.harga && (
+                                    {errors.harga && !isEditMode && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -248,7 +325,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             id="kategori_id"
                                             value={data.kategori_id}
                                             onChange={e => setData('kategori_id', Number(e.target.value))}
-                                            required
+                                            required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
                                         >
                                             {kategoris.map((kat: Kategori) => (
@@ -256,7 +333,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             ))}
                                         </select>
                                     </div>
-                                    {errors.kategori_id && (
+                                    {errors.kategori_id && !isEditMode && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -282,6 +359,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             id="first_image"
                                             accept="image/*"
                                             onChange={e => setData('first_image', e.target.files?.[0] ?? null)}
+                                            required={!isEditMode && !produk?.first_image}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         />
                                         <div className="border-2 border-dashed border-emerald-300 rounded-xl p-8 text-center hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-300 group cursor-pointer bg-white/50 backdrop-blur-sm">
@@ -296,7 +374,12 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                                 </div>
                                                 <div>
                                                     <p className="text-lg font-semibold text-emerald-700 group-hover:text-emerald-800 transition-colors duration-300">
-                                                        {data.first_image ? data.first_image.name : 'Pilih gambar utama'}
+                                                        {data.first_image 
+                                                            ? data.first_image.name 
+                                                            : isEditMode && produk?.first_image 
+                                                            ? 'Gambar saat ini tersedia - pilih untuk mengganti' 
+                                                            : 'Pilih gambar utama'
+                                                        }
                                                     </p>
                                                     <p className="text-sm text-gray-500 mt-1">
                                                         PNG, JPG, GIF hingga 10MB
@@ -306,7 +389,29 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                         </div>
                                     </div>
                                     
-                                    {errors.first_image && (
+                                    {/* Preview gambar yang sudah ada pada mode edit */}
+                                    {isEditMode && produk?.first_image && !data.first_image && (
+                                        <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                            <p className="text-sm font-medium text-emerald-800 mb-2">Gambar saat ini:</p>
+                                            <div className="flex items-center gap-3">
+                                                <img 
+                                                    src={`/storage/${produk.first_image}`} 
+                                                    alt="Current image" 
+                                                    className="w-16 h-16 object-cover rounded-lg border border-emerald-200"
+                                                />
+                                                <div>
+                                                    <p className="text-sm text-emerald-700 font-medium">
+                                                        {produk.first_image.split('/').pop()}
+                                                    </p>
+                                                    <p className="text-xs text-emerald-600">
+                                                        Upload file baru untuk mengganti
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {errors.first_image && !data.first_image && (!isEditMode || !produk?.first_image) && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -358,7 +463,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                         </div>
                                     </div>
                                     
-                                    {errors.image && (
+                                    {errors.image && data.image.length === 0 && !isEditMode && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -510,7 +615,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             id="jumlah_pembelian"
                                             value={data.jumlah_pembelian}
                                             onChange={e => setData('jumlah_pembelian', Number(e.target.value))}
-                                            required
+                                            required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
                                             placeholder="0"
                                         />
@@ -518,7 +623,7 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             <Hash className="h-5 w-5 text-emerald-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
                                         </div>
                                     </div>
-                                    {errors.jumlah_pembelian && (
+                                    {errors.jumlah_pembelian && !isEditMode && (
                                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
                                             <span className="text-red-600 text-sm font-medium flex items-center gap-2">
                                                 <X className="h-4 w-4" />
@@ -756,6 +861,16 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                 .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
                 .animate-shake { animation: shake 0.5s ease-in-out; }
             `}</style>
+
+            {/* Modal */}
+            <Modal
+                isOpen={modal.isOpen}
+                onClose={handleCloseModal}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+                details={modal.details}
+            />
         </div>
     );
 }

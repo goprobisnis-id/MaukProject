@@ -47,7 +47,7 @@ class ProdukController extends Controller
                 'nama_produk' => 'required|string|max:255',
                 'harga' => 'required|numeric',
                 'kategori_id' => 'required|exists:kategoris,id',
-                'first_image' => 'nullable|image',
+                'first_image' => 'required|image',
                 'link_shopee' => 'nullable|string',
                 'link_tokped' => 'nullable|string',
                 'short_desc' => 'nullable|string|max:500',
@@ -145,65 +145,111 @@ class ProdukController extends Controller
      */
     public function update(Request $request, Produk $produk)
     {
-        $validated = $request->validate([
-            'nama_produk' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'kategori_id' => 'required|exists:kategoris,id',
-            'first_image' => 'nullable|image',
-            'link_shopee' => 'nullable|url',
-            'link_tokped' => 'nullable|url',
-            'short_desc' => 'nullable|string|max:500',
-            'long_desc' => 'nullable|string',
-            'jumlah_pembelian' => 'required|integer|min:0',
-            'image.*' => 'nullable|image',
-            'size.*' => 'nullable|string|max:50',
-            'color.*' => 'nullable|string|max:50',
-        ]);
+        try {
+            \DB::beginTransaction();
+            
+            // Log untuk debug
+            \Log::info('Update Request Data:', $request->all());
+            \Log::info('Request method: ' . $request->method());
+            \Log::info('Content Type: ' . $request->header('Content-Type'));
+            
+            // Coba ambil data dari input() juga
+            \Log::info('Input Data:', $request->input());
+            
+            $validated = $request->validate([
+                'nama_produk' => 'required|string|max:255',
+                'harga' => 'required|numeric',
+                'kategori_id' => 'required|exists:kategoris,id',
+                'first_image' => 'nullable|image',
+                'link_shopee' => 'nullable|string',
+                'link_tokped' => 'nullable|string',
+                'short_desc' => 'nullable|string|max:500',
+                'long_desc' => 'nullable|string',
+                'jumlah_pembelian' => 'required|integer|min:0',
+                'image.*' => 'nullable|image',
+                'size.*' => 'nullable|string|max:50',
+                'color.*' => 'nullable|string|max:50',
+                'hex_code.*' => 'nullable|string',
+            ]);
 
-        if ($request->hasFile('first_image')) {
-            if ($produk->first_image) {
-                // Hapus gambar lama jika ada
-                \Storage::disk('public')->delete($produk->first_image);
+            \Log::info('Validated Data:', $validated);
+
+            // Update data produk utama
+            $produk->update([
+                'nama_produk' => $validated['nama_produk'],
+                'harga' => $validated['harga'],
+                'kategori_id' => $validated['kategori_id'],
+                'link_shopee' => $validated['link_shopee'] ?? null,
+                'link_tokped' => $validated['link_tokped'] ?? null,
+                'short_desc' => $validated['short_desc'] ?? null,
+                'long_desc' => $validated['long_desc'] ?? null,
+                'jumlah_pembelian' => $validated['jumlah_pembelian'],
+            ]);
+
+            // Handle first image
+            if ($request->hasFile('first_image')) {
+                if ($produk->first_image) {
+                    \Storage::disk('public')->delete($produk->first_image);
+                }
+                $path = $request->file('first_image')->store('produk_images', 'public');
+                $produk->update(['first_image' => $path]);
             }
-            $validated['first_image'] = $request->file('first_image')->store('produk_images', 'public');
-        }
 
-        if($request->hasFile('image')) {    
-            // Simpan gambar baru
-            foreach ($request->file('image') as $image) {
-                $produk->images()->create([
-                    'produk_id' => $produk->id,
-                    'image' => $image->store('produk_images', 'public'),
-                ]);
+            // Handle additional images
+            if ($request->hasFile('image')) {
+                foreach ($request->file('image') as $image) {
+                    $path = $image->store('produk_images', 'public');
+                    $produk->images()->create([
+                        'image' => $path
+                    ]);
+                }
             }
-        }
 
-        if ($request->has('size')) {
-            // Simpan ukuran baru
-            foreach ($request->input('size') as $size) {
-                $produk->sizes()->create([
-                    'produk_id' => $produk->id,
-                    'size' => $size,
-                ]);
+            // Handle sizes - hapus yang lama dan tambah yang baru
+            if ($request->has('size')) {
+                $produk->sizes()->delete(); // Hapus size yang lama
+                $sizes = is_array($request->size) ? $request->size : [$request->size];
+                foreach ($sizes as $size) {
+                    if (!empty($size)) {
+                        $produk->sizes()->create(['size' => $size]);
+                    }
+                }
             }
-        }
 
-        if ($request->has('color')) {
-            // Simpan warna baru
-            foreach ($request->input('color') as $i => $color) {
-                $produk->colors()->create([
-                    'produk_id' => $produk->id,
-                    'color_name' => $color,
-                    'hex_code' => $request->hex_code[$i] ?? null, // Default hex code, can be changed later
-                ]);
+            // Handle colors - hapus yang lama dan tambah yang baru
+            if ($request->has('color')) {
+                $produk->colors()->delete(); // Hapus color yang lama
+                $colors = is_array($request->color) ? $request->color : [$request->color];
+                $hexCodes = is_array($request->hex_code) ? $request->hex_code : [$request->hex_code];
+                
+                foreach ($colors as $index => $color) {
+                    if (!empty($color)) {
+                        $produk->colors()->create([
+                            'color_name' => $color,
+                            'hex_code' => $hexCodes[$index] ?? null
+                        ]);
+                    }
+                }
             }
+
+            \DB::commit();
+            return redirect()->route('produk.index')
+                ->with('success', 'Produk berhasil diperbarui');
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \DB::rollback();
+            \Log::error('Validation errors:', $e->errors());
+            return back()
+                ->withInput()
+                ->withErrors($e->errors());
+        } catch (\Exception $e) {
+            \DB::rollback();
+            \Log::error('Error updating product: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-
-        $produk->update($validated);
-
-        // Update images, sizes, and colors as needed...
-
-        return redirect()->route('admin.produk.index')->with('success', 'Produk Berhasil Diperbarui');
     }
 
     /**
@@ -230,6 +276,6 @@ class ProdukController extends Controller
 
         $produk->delete();
 
-        return redirect()->route('admin.produk.index')->with('success', 'Produk Berhasil Dihapus');
+        return redirect()->route('produk.index')->with('success', 'Produk Berhasil Dihapus');
     }
 }

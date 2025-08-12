@@ -4,6 +4,59 @@ import type { Config } from 'ziggy-js';
 export interface Auth {
     user: User;
 }
+// Kategori
+export interface Kategori {
+    id: number;
+    nama: string;
+}
+
+// ProdukImage
+export interface ProdukImage {
+    id: number;
+    produk_id: number;
+    image: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// ProdukSize
+export interface ProdukSize {
+    id: number;
+    produk_id: number;
+    size: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// ProdukColor
+export interface ProdukColor {
+    id: number;
+    produk_id: number;
+    color_name: string;
+    hex_code: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// Produk
+export interface Produk {
+    id: number;
+    nama_produk: string;
+    harga: number;
+    kategori_id: number;
+    kategori?: Kategori;
+    first_image: string | null;
+    link_shopee?: string;
+    link_tokped?: string;
+    short_desc?: string;
+    long_desc?: string;
+    jumlah_pembelian: number;
+    images?: ProdukImage[];
+    sizes?: ProdukSize[];
+    colors?: ProdukColor[];
+    created_at?: string;
+    updated_at?: string;
+}
 
 export interface BreadcrumbItem {
     title: string;

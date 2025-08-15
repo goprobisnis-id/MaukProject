@@ -14,14 +14,14 @@ export default function ProdukGrid() {
         </h2>
         
         {/* Grid Container */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 px-8">
           {produks.map((produk) => (
             <div 
               key={produk.id}
               className="relative group"
             >
               {/* Image Container */}
-              <div className="h-64 bg-gray-100 overflow-hidden rounded-lg shadow-lg">
+              <div className="h-48 bg-gray-100 overflow-hidden rounded-lg shadow-lg mx-6">
                 <img 
                   src={`/storage/${produk.first_image}`}
                   alt={produk.nama_produk}
@@ -30,7 +30,7 @@ export default function ProdukGrid() {
               </div>
               
               {/* Floating Card */}
-              <div className="absolute -bottom-8 left-4 right-4 bg-white rounded-lg shadow-xl p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+              <div className="absolute -bottom-8 left-8 right-8 bg-white rounded-lg shadow-xl p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                 <h3 className="text-lg font-bold text-gray-800 text-center mb-1">
                   {produk.nama_produk}
                 </h3>

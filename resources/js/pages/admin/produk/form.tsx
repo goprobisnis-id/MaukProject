@@ -26,14 +26,14 @@ interface ProdukColor {
 interface Produk {
     id?: number;
     nama_produk: string;
-    harga: number;
+    harga: number | string;
     kategori_id: number;
     first_image: string | null;
     link_shopee?: string;
     link_tokped?: string;
     short_desc?: string;
     long_desc?: string;
-    jumlah_pembelian: number;
+    jumlah_pembelian: number | string;
     images?: ProdukImage[];
     sizes?: ProdukSize[];
     colors?: ProdukColor[];
@@ -54,14 +54,14 @@ interface ColorItem {
 // Interface untuk form data yang akan dikirim
 interface ProdukFormData {
     nama_produk: string;
-    harga: number;
+    harga: number | string;
     kategori_id: number;
     first_image: File | null;
     link_shopee: string;
     link_tokped: string;
     short_desc: string;
     long_desc: string;
-    jumlah_pembelian: number;
+    jumlah_pembelian: number | string;
     image: File[];
     size: string[];
     color: string[];
@@ -76,14 +76,14 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
     // Menggunakan Record<string, any> untuk kompatibilitas dengan Inertia.js
     const { data, setData, post, put, processing, errors } = useForm({
         nama_produk: produk?.nama_produk ?? '',
-        harga: produk?.harga ?? 0,
+        harga: produk?.harga ?? '',
         kategori_id: produk?.kategori_id ?? kategoris[0]?.id ?? 0,
         first_image: null as any,
         link_shopee: produk?.link_shopee ?? '',
         link_tokped: produk?.link_tokped ?? '',
         short_desc: produk?.short_desc ?? '',
         long_desc: produk?.long_desc ?? '',
-        jumlah_pembelian: produk?.jumlah_pembelian ?? 0,
+        jumlah_pembelian: produk?.jumlah_pembelian ?? '',
         image: [] as any,
         size: produk?.sizes?.map((s: ProdukSize) => s.size) ?? [],
         color: produk?.colors?.map((c: ProdukColor) => c.color_name) ?? [],
@@ -292,10 +292,10 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             type="number"
                                             id="harga"
                                             value={data.harga}
-                                            onChange={e => setData('harga', Number(e.target.value))}
+                                            onChange={e => setData('harga', e.target.value === '' ? '' : Number(e.target.value))}
                                             required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
-                                            placeholder="0"
+                                            placeholder="Contoh: 150000"
                                         />
                                         <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                                             <DollarSign className="h-5 w-5 text-emerald-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
@@ -614,10 +614,10 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                                             type="number"
                                             id="jumlah_pembelian"
                                             value={data.jumlah_pembelian}
-                                            onChange={e => setData('jumlah_pembelian', Number(e.target.value))}
+                                            onChange={e => setData('jumlah_pembelian', e.target.value === '' ? '' : Number(e.target.value))}
                                             required={!isEditMode}
                                             className="w-full px-6 py-4 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm group-hover:border-emerald-300 hover:shadow-lg"
-                                            placeholder="0"
+                                            placeholder="Contoh: 25"
                                         />
                                         <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                                             <Hash className="h-5 w-5 text-emerald-400 group-focus-within:text-emerald-600 transition-colors duration-300" />

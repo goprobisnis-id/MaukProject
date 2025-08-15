@@ -11,8 +11,8 @@ export default function Navbar() {
             const path = window.location.pathname;
             if (path === '/' || path === route('home')) {
                 setActive('home');
-            } else if (path.includes('catalog')) {
-                setActive('catalog');
+            } else if (path.includes('katalog')) {
+                setActive('katalog');
             } else if (path.includes('event')) {
                 setActive('event');
             }
@@ -24,8 +24,8 @@ export default function Navbar() {
         router.visit(route('home'));
     };
     const handleCatalog = () => {
-        setActive('catalog');
-        router.visit(route('catalog'));
+        setActive('katalog');
+        router.visit(route('katalog'));
     };
     const handleEvent = () => {
         setActive('event');
@@ -47,7 +47,7 @@ export default function Navbar() {
                     <Button
                         variant="ghost"
                         onClick={handleCatalog}
-                        className={`text-sm px-4 py-6 hover:bg-[#579D3E] ${active === 'catalog' ? 'bg-[#579D3E] text-black shadow-xl' : ''}`}
+                        className={`text-sm px-4 py-6 hover:bg-[#579D3E] ${active === 'katalog' ? 'bg-[#579D3E] text-black shadow-xl' : ''}`}
                     >
                         Katalog
                     </Button>

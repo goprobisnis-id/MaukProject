@@ -13,7 +13,7 @@ class WelcomeController extends Controller
                          ->orderBy('jumlah_pembelian', 'desc')
                          ->limit(3)
                          ->get();
-        return Inertia::render('welcome', [
+        return Inertia::render('front/welcome', [
             'produks' => $produks
         ]);
     }

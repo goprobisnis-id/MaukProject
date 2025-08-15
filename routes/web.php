@@ -7,6 +7,9 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KategoriController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/katalog', function() {
+    return Inertia::render('front/katalog');
+})->name('katalog');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

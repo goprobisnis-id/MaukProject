@@ -8,6 +8,7 @@ export interface Auth {
 export interface Kategori {
     id: number;
     nama: string;
+    thumbnail:string
 }
 
 // ProdukImage

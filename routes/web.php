@@ -6,9 +6,13 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\KategoriProductController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
+Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
+Route::get('/kategori/{id}', [KategoriProductController::class, 'show'])->name('kategori.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

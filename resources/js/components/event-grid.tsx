@@ -43,22 +43,22 @@ export default function EventGrid() {
         }
     ];
   return (
-    <div className="bg-gradient-to-b from-[#116821] via-[#1a8c2e] to-[#116821] py-16 px-8 mt-1">
+    <div className="bg-gradient-to-b from-[#116821] via-[#1a8c2e] to-[#116821] py-12 lg:py-16 px-4 sm:px-8 mt-1">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <h2 className="text-4xl font-bold text-white text-center mb-12">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center mb-8 lg:mb-12">
           EVENT SEGERA BERLANGSUNG!
         </h2>
         
         {/* Grid Container */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 px-4 sm:px-8">
           {events.map((event) => (
             <div 
               key={event.id}
               className="relative group"
             >
               {/* Image Container */}
-              <div className="h-48 bg-gray-100 overflow-hidden rounded-lg shadow-lg mx-6">
+              <div className="h-40 sm:h-44 lg:h-48 bg-gray-100 overflow-hidden rounded-lg shadow-lg mx-2 sm:mx-4 lg:mx-6">
                 <img 
                   src={`/${event.gambar}`}
                   alt={event.nama_event}
@@ -67,8 +67,8 @@ export default function EventGrid() {
               </div>
               
               {/* Floating Card */}
-              <div className="absolute -bottom-6 left-8 right-8 bg-white rounded-lg shadow-xl p-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                <h3 className="text-base font-bold text-gray-800 text-center mb-1">
+              <div className="absolute -bottom-5 sm:-bottom-6 left-4 right-4 sm:left-6 sm:right-6 lg:left-8 lg:right-8 bg-white rounded-lg shadow-xl p-2 sm:p-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-sm sm:text-base font-bold text-gray-800 text-center mb-1">
                   {event.nama_event}
                 </h3>
                 

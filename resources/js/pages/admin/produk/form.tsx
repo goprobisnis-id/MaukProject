@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import NavbarAdmin from "@/components/navbarAdmin";
+import NotificationPopup from "@/components/NotificationPopup";
 import Modal from "@/components/ui/modal";
 import { useForm, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { Save, X, Upload, Image, Tag, Sparkles, ArrowLeft, FileImage, ShoppingBag, DollarSign, Link, FileText, Hash, Palette, Ruler } from 'lucide-react';
+import { Save, X, Upload, Image, Tag, ArrowLeft, FileImage, ShoppingBag, DollarSign, Link, FileText, Hash, Palette, Ruler } from 'lucide-react';
 
 interface Kategori {
     id: number;
@@ -69,7 +70,22 @@ interface ProdukFormData {
     [key: string]: any; // Index signature untuk kompatibilitas dengan Inertia.js
 }
 
-export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps) {
+export default function ProdukForm({ produk, mode, kategoris, ...props }: ProdukFormProps) {
+    const [notification, setNotification] = useState<{
+        type: 'loading' | 'success' | 'error';
+        message: string;
+    } | null>(null);
+
+    const [isVisible, setIsVisible] = useState(false);
+
+    // Animation trigger
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, []);
     const isEditMode = mode === 'edit';
     const formTitle = isEditMode ? 'Edit Produk' : 'Tambah Produk';
 
@@ -208,43 +224,50 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100 animate-gradient-x">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
             <NavbarAdmin />
             
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Animated Header */}
-                <div className="mb-8 animate-fade-in-up">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="relative p-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl shadow-lg animate-pulse-gentle">
-                            <ShoppingBag className="h-8 w-8 text-white" />
-                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
-                                <Sparkles className="h-3 w-3 text-yellow-700" />
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+                {/* Header */}
+                <div className={`bg-white rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+                        <div className="flex items-center space-x-3 sm:space-x-4">
+                            <div className="p-2 sm:p-3 bg-[#579D3E] rounded-xl shadow-lg">
+                                <ShoppingBag className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{formTitle}</h1>
+                                <p className="text-sm sm:text-base text-gray-600 mt-1">
+                                    {isEditMode ? 'Update informasi produk' : 'Buat produk baru untuk toko'}
+                                </p>
                             </div>
                         </div>
-                        <div>
-                            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                                {formTitle}
-                            </h1>
-                            <div className="h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full mt-2 animate-width-expand"></div>
-                        </div>
+                        
+                        <Button
+                            type="button"
+                            onClick={() => router.visit('/admin/produk')}
+                            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 rounded-xl px-4 sm:px-6 py-2 sm:py-3 transition-all duration-300 hover:scale-105 shadow-lg flex items-center space-x-2 text-sm sm:text-base w-full sm:w-auto justify-center"
+                        >
+                            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <span>Kembali</span>
+                        </Button>
                     </div>
                 </div>
 
                 {/* Form Card */}
-                <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-emerald-200 overflow-hidden animate-fade-in-up delay-200">
+                <div className={`bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     {/* Card Header */}
-                    <div className="p-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 animate-shimmer"></div>
-                        <h2 className="text-2xl font-bold text-white flex items-center gap-3 relative z-10">
-                            <ShoppingBag className="h-6 w-6 animate-spin-slow" />
-                            Form Produk
+                    <div className="p-4 sm:p-6 bg-gradient-to-r from-[#579D3E] to-[#4a8535]">
+                        <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center space-x-2 sm:space-x-3">
+                            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" />
+                            <span>Informasi Produk</span>
                         </h2>
                     </div>
 
                     <form onSubmit={handleSubmit} encType="multipart/form-data">
-                        <div className="p-8">
+                        <div className="p-4 sm:p-6 lg:p-8">
                             {/* Form Content */}
-                            <div className="space-y-8">
+                            <div className="space-y-6 sm:space-y-8">
                                 {/* Nama Produk Field */}
                                 <div className="animate-slide-in-left delay-300">
                                     <label 
@@ -870,6 +893,14 @@ export default function ProdukForm({ produk, mode, kategoris }: ProdukFormProps)
                 title={modal.title}
                 message={modal.message}
                 details={modal.details}
+            />
+
+            {/* Notification Popup */}
+            <NotificationPopup
+                isOpen={!!notification}
+                type={notification?.type || 'loading'}
+                title={notification?.message || ''}
+                onClose={() => setNotification(null)}
             />
         </div>
     );

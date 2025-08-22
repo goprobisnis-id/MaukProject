@@ -13,6 +13,7 @@ Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
 Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
 Route::get('/kategori/{id}', [KategoriProductController::class, 'show'])->name('kategori.show');
+Route::get('/products/{id}', [KatalogController::class, 'showProduk'])->name('products.detail');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

@@ -19,6 +19,8 @@ export default function Navbar() {
                 setActive('event');
             } else if (path.includes('products')) {
                 setActive('katalog');
+            } else if (path.includes('kategori')) {
+                setActive('katalog');
             }
         }
     }, []);

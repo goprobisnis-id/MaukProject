@@ -38,7 +38,7 @@ export default function ProdukGrid() {
                 {/* Link Button */}
                 <div className="text-center">
                   <a 
-                    href={produk.link_shopee}
+                    href={`/products/${produk.id}`}
                     className="inline-flex items-center text-green-600 font-semibold hover:text-green-700 transition-colors duration-200 text-xs sm:text-sm"
                   >
                     Lihat Produk

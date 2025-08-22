@@ -14,7 +14,7 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $produks = Produk::with('kategori')->get();
+        $produks = Produk::with('kategori')->paginate(10);
         return Inertia::render('admin/produk/index', [
             'produks' => $produks
         ]);

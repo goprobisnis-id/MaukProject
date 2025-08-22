@@ -15,7 +15,7 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        $kategoris = Kategori::all();
+        $kategoris = Kategori::paginate(5);
         return Inertia::render('admin/kategori/index', [
             'kategoris' => $kategoris
         ]);

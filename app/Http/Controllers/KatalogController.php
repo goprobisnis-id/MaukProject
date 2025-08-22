@@ -19,4 +19,18 @@ class KatalogController extends Controller
             'terlarisProducts' => $terlarisProducts
         ]);
     }
+
+    public function showProduk($id) {
+        $produk = Produk::findOrFail($id);
+        $produk->load(['kategori', 'images', 'sizes', 'colors']);
+        $relatedProducts = Produk::where('kategori_id', $produk->kategori_id)
+            ->where('id', '!=', $produk->id)
+            ->limit(3)
+            ->get();
+
+        return Inertia::render('front/product-detail', [
+            'produk' => $produk,
+            'relatedProducts' => $relatedProducts
+        ]);
+    }
 }

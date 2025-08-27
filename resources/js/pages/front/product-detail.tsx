@@ -59,7 +59,7 @@ export default function ProductDetail({ produk, relatedProducts }: ProductDetail
     return (
         <div className="min-h-screen">
             <Navbar />
-            <nav className="my-4 flex justify-center gap-4">
+            {/* <nav className="my-4 flex justify-center gap-4">
                 <Link href="/" className="text-blue-600 hover:underline">
                     Home
                 </Link>
@@ -78,7 +78,7 @@ export default function ProductDetail({ produk, relatedProducts }: ProductDetail
                 <Link href="/login" className="text-blue-600 hover:underline">
                     Login
                 </Link>
-            </nav>
+            </nav> */}
             {/* E Commerce yang tersedia */}
             <div className={`mt-5 px-4 transition-all duration-1000 sm:px-8 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                 <div className="text-center">

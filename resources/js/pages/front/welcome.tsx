@@ -1,41 +1,36 @@
-import Navbar from "@/components/navbar";
-import Slidder from "@/components/slider";
-import ProdukGrid from "@/components/produk-grid";
-import EventGrid from "@/components/event-grid";
-import Footer from "@/components/footer";
-import { useEffect, useRef, useState } from "react";
+import EventGrid from '@/components/event-grid';
+import Footer from '@/components/footer';
+import Navbar from '@/components/navbar';
+import ProdukGrid from '@/components/produk-grid';
+import Slidder from '@/components/slider';
+import { usePage } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Welcome() {
-    const [isVisible, setIsVisible] = useState(false);
+    // Ambil events dari props Inertia
+    const { props } = usePage();
+    const events = props.events || [];
+    // Restore animation state and section refs
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-    // Hook untuk animasi saat komponen dimount
-    useEffect(() => {
-        setIsVisible(true);
-    }, []);
-
-    // Hook untuk Intersection Observer
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        setVisibleSections(prev => ({
+                        setVisibleSections((prev) => ({
                             ...prev,
-                            [entry.target.id]: true
+                            [entry.target.id]: true,
                         }));
                     }
                 });
             },
-            { threshold: 0.1 }
+            { threshold: 0.1 },
         );
-
-        // Observe semua section
         Object.values(sectionRefs.current).forEach((ref) => {
             if (ref) observer.observe(ref);
         });
-
         return () => observer.disconnect();
     }, []);
 
@@ -43,92 +38,97 @@ export default function Welcome() {
         sectionRefs.current[id] = el;
     };
     return (
-        <div className="flex flex-col gap-y-4 min-h-screen bg-white">
-            <Navbar/>
-            <Slidder/>
-            
+        <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-[#ffffff] via-[#ffffff] to-[#f9fffa]">
+            <Navbar />
+            <Slidder />
             {/* About Section */}
-            <div 
+            <div
                 ref={setSectionRef('aboutSection')}
                 id="aboutSection"
-                className={`flex flex-col justify-center items-center w-full px-4 sm:px-8 lg:px-50 py-8 lg:py-10 mt-8 lg:mt-28 gap-4 lg:gap-6 mx-auto transition-all duration-1000 ${
-                    visibleSections.aboutSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`-mt-1550 flex w-full flex-col items-center justify-center gap-4 border border-solid border-black px-4 py-8 transition-all duration-1000 sm:px-8 lg:mt-28 lg:gap-6 lg:px-50 lg:py-10 ${
+                    visibleSections.aboutSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <img 
-                    src="/logo_mauk.png" 
-                    alt="logo mauk" 
-                    className={`mx-auto w-24 sm:w-32 lg:w-40 transition-all duration-1000 ${
-                        visibleSections.aboutSection ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
+                <img
+                    src="/logo_mauk.png"
+                    alt="logo mauk"
+                    className={`mx-auto w-24 transition-all duration-1000 sm:w-32 lg:w-40 ${
+                        visibleSections.aboutSection ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
                     }`}
                 />
-                <p 
-                    className={`text-center text-sm sm:text-base lg:text-lg italic max-w-4xl transition-all duration-1000 ${
-                        visibleSections.aboutSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                <p
+                    className={`max-w-4xl text-center text-sm italic transition-all delay-[200ms] duration-1000 sm:text-base lg:text-lg ${
+                        visibleSections.aboutSection ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
                     }`}
-                    style={{ transitionDelay: '200ms' }}
                 >
-                    Tujuan <strong>Kreasi Limbah Mauk</strong> adalah untuk menjadi wajah utama dalam memasarkan produk-produk kreatif yang berasal dari limbah, khususnya yang dihasilkan oleh masyarakat Desa Mauk.
+                    Tujuan <strong>Kreasi Limbah Mauk</strong> adalah untuk menjadi wajah utama dalam memasarkan produk-produk kreatif yang berasal
+                    dari limbah, khususnya yang dihasilkan oleh masyarakat Desa Mauk.
                 </p>
-                <p 
-                    className={`text-center text-sm sm:text-base lg:text-lg italic max-w-4xl transition-all duration-1000 ${
-                        visibleSections.aboutSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                <p
+                    className={`max-w-4xl text-center text-sm italic transition-all delay-[400ms] duration-1000 sm:text-base lg:text-lg ${
+                        visibleSections.aboutSection ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
                     }`}
-                    style={{ transitionDelay: '400ms' }}
                 >
-                    Inisiatif ini bertujuan untuk mendorong semangat kewirausahaan (entrepreneurship) di kalangan warga desa, sekaligus menjadi sarana promosi dan dokumentasi atas seluruh kegiatan pengolahan limbah menjadi kreasi yang bernilai guna dan ekonomis.
+                    Inisiatif ini bertujuan untuk mendorong semangat kewirausahaan (entrepreneurship) di kalangan warga desa, sekaligus menjadi sarana
+                    promosi dan dokumentasi atas seluruh kegiatan pengolahan limbah menjadi kreasi yang bernilai guna dan ekonomis.
                 </p>
-                <p 
-                    className={`text-center text-sm sm:text-base lg:text-lg italic max-w-4xl transition-all duration-1000 ${
-                        visibleSections.aboutSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                <p
+                    className={`max-w-4xl text-center text-sm italic transition-all delay-[600ms] duration-1000 sm:text-base lg:text-lg ${
+                        visibleSections.aboutSection ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
                     }`}
-                    style={{ transitionDelay: '600ms' }}
                 >
-                    Dengan begitu, Kreasi Limbah Mauk tidak hanya berfokus pada aspek lingkungan, tetapi juga menjadi wadah pemberdayaan ekonomi dan pengembangan potensi lokal desa.
+                    Dengan begitu, Kreasi Limbah Mauk tidak hanya berfokus pada aspek lingkungan, tetapi juga menjadi wadah pemberdayaan ekonomi dan
+                    pengembangan potensi lokal desa.
                 </p>
             </div>
-            
             {/* E-Commerce Section */}
-            <div 
+            <div
                 ref={setSectionRef('ecommerceSection')}
                 id="ecommerceSection"
-                className={`mt-8 lg:mt-20 px-4 sm:px-8 transition-all duration-1000 ${
-                    visibleSections.ecommerceSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`mt-8 px-4 transition-all duration-1000 sm:px-8 lg:mt-20 ${
+                    visibleSections.ecommerceSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
                 <div className="text-center">
-                    <span className="text-black font-bold text-2xl sm:text-3xl lg:text-4xl italic">Catalog </span>
-                    <span className="text-[#579D3E] font-bold text-2xl sm:text-3xl lg:text-4xl italic">MAK-PIN</span>
-                    <p className="text-center text-sm sm:text-base lg:text-lg mt-2">tersedia di beberapa e-commerce:</p>
+                    <span className="text-2xl font-bold text-black italic sm:text-3xl lg:text-4xl">Catalog </span>
+                    <span className="text-2xl font-bold text-[#579D3E] italic sm:text-3xl lg:text-4xl">MAK-PIN</span>
+                    <p className="mt-2 text-center text-sm sm:text-base lg:text-lg">tersedia di beberapa e-commerce:</p>
                 </div>
-                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 lg:gap-12 xl:gap-20 mt-6 lg:mt-10">
-                    {[...Array(8)].map((_, i) => (
+                <div className="-mp-20 flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:mt-10 lg:gap-12 xl:gap-20">
+                    {[
+                        { src: '/images/shopee-logo.png', alt: 'Shopee' },
+                        { src: '/images/tokopedia-logo.png', alt: 'Tokopedia' },
+                        { src: '/images/bukalapak-logo.png', alt: 'Bukalapak' },
+                    ].map((logo, i) => (
                         <img
-                            key={i}
-                            src="/e-commerce.png"
-                            alt={`e-commerce logo ${i+1}`}
-                            className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 object-contain transition-all duration-500 hover:scale-110 ${
-                                visibleSections.ecommerceSection ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-                            }`}
-                            style={{ transitionDelay: `${i * 100}ms` }}
+                            key={logo.alt}
+                            src={logo.src}
+                            alt={logo.alt}
+                            className={`h-12 w-auto object-contain transition-all duration-500 hover:scale-105 ${
+                                visibleSections.ecommerceSection ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                            } delay-[${i * 100}ms]`}
                         />
                     ))}
                 </div>
-                <p className="text-center text-xs sm:text-sm lg:text-md mt-4">*logo diatas hanya ilustrasi saja</p>
             </div>
-            
             {/* Product and Event Grids */}
-            <div 
+            <div
                 ref={setSectionRef('contentSection')}
                 id="contentSection"
-                className={`mt-8 lg:mt-12 transition-all duration-1000 ${
-                    visibleSections.contentSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`mt-8 transition-all duration-1000 lg:mt-12 ${
+                    visibleSections.contentSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <ProdukGrid/>
-                <EventGrid/>
-                <Footer/>
+                {/* ProdukGrid fallback */}
+                <div className="mb-8">
+                    <ProdukGrid />
+                </div>
+                {/* EventGrid fallback */}
+                <div className="mb-8">
+                    <EventGrid events={Array.isArray(events) ? events : []} />
+                </div>
+                <Footer />
             </div>
         </div>
     );
-}   
+}

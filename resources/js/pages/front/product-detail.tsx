@@ -1,9 +1,9 @@
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
-import {Produk} from "@/types";
-import { Link } from "@inertiajs/react";
-import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import Footer from '@/components/footer';
+import Navbar from '@/components/navbar';
+import { Button } from '@/components/ui/button';
+import { Produk } from '@/types';
+import { Link } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ProductDetailProps {
     produk: Produk;
@@ -34,14 +34,14 @@ export default function ProductDetail({ produk, relatedProducts }: ProductDetail
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        setVisibleSections(prev => ({
+                        setVisibleSections((prev) => ({
                             ...prev,
-                            [entry.target.id]: true
+                            [entry.target.id]: true,
                         }));
                     }
                 });
             },
-            { threshold: 0.1 }
+            { threshold: 0.1 },
         );
 
         // Observe semua section
@@ -59,218 +59,230 @@ export default function ProductDetail({ produk, relatedProducts }: ProductDetail
     return (
         <div className="min-h-screen">
             <Navbar />
+            <nav className="my-4 flex justify-center gap-4">
+                <Link href="/" className="text-blue-600 hover:underline">
+                    Home
+                </Link>
+                <Link href="/products" className="text-blue-600 hover:underline">
+                    Produk
+                </Link>
+                <Link href="/kategori" className="text-blue-600 hover:underline">
+                    Kategori
+                </Link>
+                <Link href="/katalog" className="text-blue-600 hover:underline">
+                    Katalog
+                </Link>
+                <Link href="/dashboard" className="text-blue-600 hover:underline">
+                    Dashboard
+                </Link>
+                <Link href="/login" className="text-blue-600 hover:underline">
+                    Login
+                </Link>
+            </nav>
             {/* E Commerce yang tersedia */}
-            <div 
-                className={`mt-5 px-4 sm:px-8 transition-all duration-1000 ${
-                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-            >
+            <div className={`mt-5 px-4 transition-all duration-1000 sm:px-8 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                 <div className="text-center">
-                    <span className="text-black font-bold text-2xl sm:text-3xl lg:text-4xl italic">Catalog </span>
-                    <span className="text-[#579D3E] font-bold text-2xl sm:text-3xl lg:text-4xl italic">MAK-PIN</span>
-                    <p className="text-center text-sm sm:text-base lg:text-lg mt-2">tersedia di beberapa e-commerce:</p>
+                    <span className="text-2xl font-bold text-black italic sm:text-3xl lg:text-4xl">Catalog </span>
+                    <span className="text-2xl font-bold text-[#579D3E] italic sm:text-3xl lg:text-4xl">MAK-PIN</span>
+                    <p className="mt-2 text-center text-sm sm:text-base lg:text-lg">tersedia di beberapa e-commerce:</p>
                 </div>
-                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 lg:gap-12 xl:gap-20 mt-6 lg:mt-10">
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:mt-10 lg:gap-12 xl:gap-20">
                     {[...Array(8)].map((_, i) => (
                         <img
                             key={i}
                             src="/e-commerce.png"
-                            alt={`e-commerce logo ${i+1}`}
-                            className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 object-contain transition-all duration-500 hover:scale-110 ${
-                                isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-                            }`}
-                            style={{ transitionDelay: `${i * 100}ms` }}
+                            alt={`e-commerce logo ${i + 1}`}
+                            className={`h-10 w-10 object-contain transition-all duration-500 hover:scale-110 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 ${
+                                isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                            } delay-[${i * 100}ms]`}
                         />
                     ))}
                 </div>
-                <p className="text-center text-xs sm:text-sm lg:text-md mt-4">*logo diatas hanya ilustrasi saja</p>
+                <p className="lg:text-md mt-4 text-center text-xs sm:text-sm">*logo diatas hanya ilustrasi saja</p>
             </div>
 
-            <div className={`px-4 sm:px-8 lg:px-20 mt-4 transition-all duration-1000 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-            }`}>
+            <div
+                className={`mt-4 px-4 transition-all duration-1000 sm:px-8 lg:px-20 ${
+                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+                }`}
+            >
                 <Link href="/katalog">
-                    <Button className="rounded-4xl border border-black text-black text-xl p-6 bg-white hover:bg-[#579D3E] hover:text-white">
+                    <Button className="rounded-4xl border border-black bg-white p-6 text-xl text-black hover:bg-[#579D3E] hover:text-white">
                         Kembali
                     </Button>
                 </Link>
             </div>
-                    
+
             {/* Produk Detail */}
-            <div 
+            <div
                 ref={setSectionRef('productDetail')}
                 id="productDetail"
-                className={`max-w-7xl mx-auto flex flex-col lg:flex-row px-4 sm:px-8 lg:px-10 py-8 lg:py-12 gap-6 lg:gap-8 transition-all duration-1000 ${
-                    visibleSections.productDetail ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 transition-all duration-1000 sm:px-8 lg:flex-row lg:gap-8 lg:px-10 lg:py-12 ${
+                    visibleSections.productDetail ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
                 {/* Thumbnail Images */}
-                <div className="order-2 lg:order-1 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible max-w-full">
-                    {produk.images? produk.images.map((image, index) =>
-                    (<div 
-                        key={image.id} 
-                        className={`flex-shrink-0 transition-all duration-500 ${
-                            visibleSections.productDetail ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-                        }`}
-                        style={{ transitionDelay: `${index * 150}ms` }}
-                    >
-                        <img src={`/storage/${image.image}`} alt={image.image} className="w-20 h-24 sm:w-24 sm:h-30 lg:w-32 lg:h-40 p-1 border border-black rounded-lg lg:rounded-2xl object-cover" />
-                    </div>
-                    )) : null}
+                <div className="order-2 flex max-w-full gap-2 overflow-x-auto lg:order-1 lg:flex-col lg:overflow-visible">
+                    {produk.images
+                        ? produk.images.map((image, index) => (
+                              <div
+                                  key={image.id}
+                                  className={`flex-shrink-0 transition-all duration-500 ${
+                                      visibleSections.productDetail ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                                  } delay-[${index * 150}ms]`}
+                              >
+                                  <img
+                                      src={`/storage/${image.image}`}
+                                      alt={image.image}
+                                      className="h-24 w-20 rounded-lg border border-black object-cover p-1 sm:h-30 sm:w-24 lg:h-40 lg:w-32 lg:rounded-2xl"
+                                  />
+                              </div>
+                          ))
+                        : null}
                 </div>
-                
+
                 {/* Main Image */}
-                <div 
-                    className={`order-1 lg:order-2 flex justify-center flex-1 transition-all duration-1000 ${
-                        visibleSections.productDetail ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
+                <div
+                    className={`order-1 flex flex-1 justify-center transition-all duration-1000 lg:order-2 ${
+                        visibleSections.productDetail ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                     }`}
                 >
-                    <img 
-                        src={`/storage/${produk.first_image}`} 
-                        alt={produk.nama_produk} 
-                        className="w-full max-w-sm sm:max-w-md lg:max-w-lg h-auto aspect-square p-2 border border-black rounded-2xl lg:rounded-3xl object-cover" 
+                    <img
+                        src={`/storage/${produk.first_image}`}
+                        alt={produk.nama_produk}
+                        className="aspect-square h-auto w-full max-w-sm rounded-2xl border border-black object-cover p-2 sm:max-w-md lg:max-w-lg lg:rounded-3xl"
                     />
                 </div>
-                
+
                 {/* Product Info */}
-                <div 
-                    className={`order-3 w-full lg:max-w-md lg:flex-1 py-4 lg:py-8 lg:px-6 transition-all duration-1000 ${
-                        visibleSections.productDetail ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+                <div
+                    className={`order-3 w-full py-4 transition-all duration-1000 lg:max-w-md lg:flex-1 lg:px-6 lg:py-8 ${
+                        visibleSections.productDetail ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
                     }`}
                 >
-                    <h1 className="font-bold text-xl sm:text-2xl lg:text-4xl leading-tight mb-2">{produk.nama_produk}</h1>
-                    <p className="font-bold text-lg sm:text-xl lg:text-2xl text-[#579D3E] mb-4">{formatRupiah(produk.harga)}</p>
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed">{produk.short_desc}</p>
+                    <h1 className="mb-2 text-xl leading-tight font-bold sm:text-2xl lg:text-4xl">{produk.nama_produk}</h1>
+                    <p className="mb-4 text-lg font-bold text-[#579D3E] sm:text-xl lg:text-2xl">{formatRupiah(produk.harga)}</p>
+                    <p className="text-sm leading-relaxed text-gray-700 sm:text-base lg:text-lg">{produk.short_desc}</p>
                 </div>
             </div>
 
-            <div 
+            <div
                 ref={setSectionRef('ecommerce')}
                 id="ecommerce"
-                className={`max-w-4xl mx-auto flex flex-col items-center justify-center py-8 px-4 gap-6 transition-all duration-1000 ${
-                    visibleSections.ecommerce ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 px-4 py-8 transition-all duration-1000 ${
+                    visibleSections.ecommerce ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <p className="text-center font-bold text-lg sm:text-xl lg:text-2xl">PRODUK INI<br/>TERSEDIA DI E-COMMERCE</p>
-                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                <p className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
+                    PRODUK INI
+                    <br />
+                    TERSEDIA DI E-COMMERCE
+                </p>
+                <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
                     {/* Shopee Link */}
-                    <a 
-                        href={produk.link_shopee ?? ""} 
+                    <a
+                        href={produk.link_shopee ?? ''}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`flex items-center justify-center px-4 py-3 bg-white border-2 border-[#EE4D2D] rounded-lg hover:scale-105 transition-all duration-300 group ${
-                            visibleSections.ecommerce ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-                        }`}
-                        style={{ transitionDelay: '200ms' }}
+                        className={`group flex items-center justify-center rounded-lg border-2 border-[#EE4D2D] bg-white px-4 py-3 transition-all duration-300 hover:scale-105 ${
+                            visibleSections.ecommerce ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'
+                        } delay-[200ms]`}
                     >
-                        <img 
-                            src="/shopee-logo.svg" 
-                            alt="Shopee Logo" 
-                            className="w-28 sm:w-32 lg:w-36 object-contain"
-                        />
+                        <img src="/shopee-logo.svg" alt="Shopee Logo" className="w-28 object-contain sm:w-32 lg:w-36" />
                     </a>
 
                     {/* Tokopedia Link */}
-                    <a 
-                        href={produk.link_tokped ?? ""} 
+                    <a
+                        href={produk.link_tokped ?? ''}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`flex items-center justify-center bg-white border-2 border-[#42B549] rounded-lg px-4 py-3 hover:scale-105 transition-all duration-300 group ${
-                            visibleSections.ecommerce ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-                        }`}
-                        style={{ transitionDelay: '400ms' }}
+                        className={`group flex items-center justify-center rounded-lg border-2 border-[#42B549] bg-white px-4 py-3 transition-all duration-300 hover:scale-105 ${
+                            visibleSections.ecommerce ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
+                        } delay-[400ms]`}
                     >
-                        <img 
-                            src="/tokopedia-logo.svg" 
-                            alt= "Tokopedia Logo" 
-                            className="w-28 sm:w-32 lg:w-36 object-contain"
-                        />
+                        <img src="/tokopedia-logo.svg" alt="Tokopedia Logo" className="w-28 object-contain sm:w-32 lg:w-36" />
                     </a>
                 </div>
             </div>
 
             {/* DESKRIPSI SECTION */}
-            <div 
+            <div
                 ref={setSectionRef('description')}
                 id="description"
-                className={`px-4 sm:px-8 lg:px-10 transition-all duration-1000 ${
-                    visibleSections.description ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`px-4 transition-all duration-1000 sm:px-8 lg:px-10 ${
+                    visibleSections.description ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <p className="pt-4 pb-1 text-xl sm:text-2xl border-t-4 sm:border-t-8 lg:border-t-10 border-t-green-100 border-b border-b-black">Deskripsi Produk</p>
-                <div className="pt-5 pb-10 text-base sm:text-lg border-b border-b-black">"{produk.long_desc}"</div>
+                <p className="border-t-4 border-b border-t-green-100 border-b-black pt-4 pb-1 text-xl sm:border-t-8 sm:text-2xl lg:border-t-10">
+                    Deskripsi Produk
+                </p>
+                <div className="border-b border-b-black pt-5 pb-10 text-base sm:text-lg">"{produk.long_desc}"</div>
             </div>
 
             {/* Related Products Section */}
-            <div 
+            <div
                 ref={setSectionRef('relatedProducts')}
                 id="relatedProducts"
-                className={`px-4 sm:px-8 lg:px-10 pt-10 lg:pt-15 flex flex-col justify-center transition-all duration-1000 ${
-                    visibleSections.relatedProducts ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                className={`flex flex-col justify-center px-4 pt-10 transition-all duration-1000 sm:px-8 lg:px-10 lg:pt-15 ${
+                    visibleSections.relatedProducts ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <p className="text-3xl sm:text-4xl lg:text-6xl mb-6 lg:mb-8 font-bold text-center underline decoration-2 lg:decoration-3 underline-offset-4 lg:underline-offset-6">PRODUK SEMACAMNYA</p>
-                
+                <p className="mb-6 text-center text-3xl font-bold underline decoration-2 underline-offset-4 sm:text-4xl lg:mb-8 lg:text-6xl lg:decoration-3 lg:underline-offset-6">
+                    PRODUK SEMACAMNYA
+                </p>
+
                 {relatedProducts && relatedProducts.length > 0 ? (
                     <>
-                        <div className="max-w-7xl mx-auto">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
-                                {relatedProducts.map((produk, index) => (   
-                                    <div 
-                                        key={produk.id} 
-                                        className={`w-full max-w-sm border-2 border-black rounded-2xl p-4 bg-white hover:shadow-xl hover:border-[#579D3E] transition-all duration-300 cursor-pointer group hover:scale-105 ${
-                                            visibleSections.relatedProducts ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                                        }`}
-                                        style={{ transitionDelay: `${index * 200}ms` }}
-                                        onClick={() => window.location.href = `/products/${produk.id}`}
+                        <div className="mx-auto max-w-7xl">
+                            <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                {relatedProducts.map((produk, index) => (
+                                    <div
+                                        key={produk.id}
+                                        className={`group w-full max-w-sm cursor-pointer rounded-2xl border-2 border-black bg-white p-4 transition-all duration-300 hover:scale-105 hover:border-[#579D3E] hover:shadow-xl ${
+                                            visibleSections.relatedProducts ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+                                        } delay-[${index * 200}ms]`}
+                                        onClick={() => (window.location.href = `/products/${produk.id}`)}
                                     >
-                                        <div className="aspect-square w-full mb-4 bg-gray-100 rounded-2xl overflow-hidden">
-                                            <img 
-                                                src={`/storage/${produk.first_image}`} 
-                                                alt={produk.nama_produk} 
-                                                className="w-full h-full object-cover p-4 group-hover:scale-105 transition-transform duration-300" 
+                                        <div className="mb-4 aspect-square w-full overflow-hidden rounded-2xl bg-gray-100">
+                                            <img
+                                                src={`/storage/${produk.first_image}`}
+                                                alt={produk.nama_produk}
+                                                className="h-full w-full object-cover p-4 transition-transform duration-300 group-hover:scale-105"
                                             />
                                         </div>
-                                        
-                                        <div className="text-center space-y-2">
-                                            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-acme line-clamp-2">
-                                                {produk.nama_produk}
-                                            </h2>
-                                            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-black">
-                                                Rp {produk.harga.toLocaleString()}
-                                            </p>
-                                            <p className="text-xs sm:text-sm text-[#579D3E] transition-colors">
-                                                Klik untuk melihat detail produk
-                                            </p>
+
+                                        <div className="space-y-2 text-center">
+                                            <h2 className="line-clamp-2 font-acme text-lg font-bold sm:text-xl lg:text-2xl">{produk.nama_produk}</h2>
+                                            <p className="text-lg font-bold text-black sm:text-xl lg:text-2xl">Rp {produk.harga.toLocaleString()}</p>
+                                            <p className="text-xs text-[#579D3E] transition-colors sm:text-sm">Klik untuk melihat detail produk</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex justify-center mb-8 mt-6 lg:mt-12">
-                            <Link 
-                                href="/products" 
-                                className={`text-sm sm:text-base lg:text-xl font-bold border border-black px-6 sm:px-12 lg:px-20 py-2 lg:py-6 rounded-full hover:bg-gray-100 transition-all duration-300 hover:scale-105 ${
-                                    visibleSections.relatedProducts ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-                                }`}
-                                style={{ transitionDelay: '600ms' }}
+                        <div className="mt-6 mb-8 flex justify-center lg:mt-12">
+                            <Link
+                                href="/products"
+                                className={`rounded-full border border-black px-6 py-2 text-sm font-bold transition-all duration-300 hover:scale-105 hover:bg-gray-100 sm:px-12 sm:text-base lg:px-20 lg:py-6 lg:text-xl ${
+                                    visibleSections.relatedProducts ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+                                } delay-[600ms]`}
                             >
                                 View All
                             </Link>
                         </div>
                     </>
                 ) : (
-                    <div className={`text-center py-8 lg:py-12 transition-all duration-1000 ${
-                        visibleSections.relatedProducts ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    }`}>
-                        <div className="text-4xl sm:text-5xl lg:text-6xl mb-4">📦</div>
-                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-700 mb-2">Belum Ada Produk Terkait</h3>
-                        <p className="text-sm sm:text-base lg:text-lg text-gray-500 mb-4 px-4">
-                            Saat ini belum ada produk serupa yang tersedia
-                        </p>
-                        <Link 
-                            href="/products" 
-                            className="inline-block text-sm sm:text-base lg:text-xl font-bold border border-black px-6 sm:px-8 lg:px-12 py-2 lg:py-3 rounded-full hover:bg-gray-100 transition-all duration-300 hover:scale-105"
+                    <div
+                        className={`py-8 text-center transition-all duration-1000 lg:py-12 ${
+                            visibleSections.relatedProducts ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+                        }`}
+                    >
+                        <div className="mb-4 text-4xl sm:text-5xl lg:text-6xl">📦</div>
+                        <h3 className="mb-2 text-xl font-bold text-gray-700 sm:text-2xl lg:text-3xl">Belum Ada Produk Terkait</h3>
+                        <p className="mb-4 px-4 text-sm text-gray-500 sm:text-base lg:text-lg">Saat ini belum ada produk serupa yang tersedia</p>
+                        <Link
+                            href="/products"
+                            className="inline-block rounded-full border border-black px-6 py-2 text-sm font-bold transition-all duration-300 hover:scale-105 hover:bg-gray-100 sm:px-8 sm:text-base lg:px-12 lg:py-3 lg:text-xl"
                         >
                             Lihat Semua Produk
                         </Link>
@@ -279,5 +291,5 @@ export default function ProductDetail({ produk, relatedProducts }: ProductDetail
             </div>
             <Footer />
         </div>
-    )
+    );
 }

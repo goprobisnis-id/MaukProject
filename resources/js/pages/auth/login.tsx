@@ -41,37 +41,39 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 sm:px-6 lg:px-8">
             <Head title="Log in" />
-            
+
             {/* Background decoration */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-20 sm:-top-40 -right-20 sm:-right-40 w-40 h-40 sm:w-80 sm:h-80 bg-[#579D3E] opacity-10 rounded-full"></div>
-                <div className="absolute -bottom-20 sm:-bottom-40 -left-20 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-[#579D3E] opacity-10 rounded-full"></div>
+                <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-[#579D3E] opacity-10 sm:-top-40 sm:-right-40 sm:h-80 sm:w-80"></div>
+                <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-[#579D3E] opacity-10 sm:-bottom-40 sm:-left-40 sm:h-80 sm:w-80"></div>
             </div>
 
-            <div className={`relative z-10 w-full max-w-sm sm:max-w-md transition-all duration-1000 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}>
+            <div
+                className={`relative z-10 w-full max-w-sm transition-all duration-1000 sm:max-w-md ${
+                    isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+                }`}
+            >
                 {/* Logo and Title */}
-                <div className="text-center mb-6 sm:mb-8">
-                    <div className="mb-4 sm:mb-6 p-2 sm:p-3">
-                        <img 
-                            src="/logo_mauk.png" 
-                            alt="MAK-PIN Logo" 
-                            className="w-16 h-16 sm:w-20 sm:h-20 mx-auto p-2 rounded-3xl border-4 border-[#579D3E] shadow-lg"
+                <div className="mb-6 text-center sm:mb-8">
+                    <div className="mb-4 p-2 sm:mb-6 sm:p-3">
+                        <img
+                            src="/logo_mauk.png"
+                            alt="MAK-PIN Logo"
+                            className="mx-auto h-16 w-16 rounded-3xl border-4 border-[#579D3E] p-2 shadow-lg sm:h-20 sm:w-20"
                         />
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">
+                    <h1 className="mb-2 text-2xl font-bold text-black sm:text-3xl">
                         Welcome to <span className="text-[#579D3E]">MAK-PIN</span>
                     </h1>
-                    <p className="text-sm sm:text-base text-gray-600">Masuk ke akun Anda untuk melanjutkan</p>
+                    <p className="text-sm text-gray-600 sm:text-base">Masuk ke akun Anda untuk melanjutkan</p>
                 </div>
 
                 {/* Login Form */}
-                <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-200 p-6 sm:p-8">
+                <div className="rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-xl sm:p-8">
                     {status && (
-                        <div className="mb-4 sm:mb-6 p-3 sm:p-4 text-center text-sm font-medium text-[#579D3E] bg-green-50 border border-green-200 rounded-lg">
+                        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-center text-sm font-medium text-[#579D3E] sm:mb-6 sm:p-4">
                             {status}
                         </div>
                     )}
@@ -79,7 +81,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     <form className="flex flex-col gap-4 sm:gap-6" onSubmit={submit}>
                         <div className="grid gap-4 sm:gap-6">
                             <div className="grid gap-2 sm:gap-3">
-                                <Label htmlFor="email" className="text-black font-medium text-sm sm:text-base">Email Address</Label>
+                                <Label htmlFor="email" className="text-sm font-medium text-black sm:text-base">
+                                    Email Address
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -90,18 +94,20 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
                                     placeholder="email@example.com"
-                                    className="border-2 border-gray-300 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:border-[#579D3E] focus:ring-2 focus:ring-[#579D3E] focus:ring-opacity-20 transition-all duration-300 text-sm sm:text-base"
+                                    className="focus:ring-opacity-20 rounded-xl border-2 border-gray-300 px-3 py-2 text-sm transition-all duration-300 focus:border-[#579D3E] focus:ring-2 focus:ring-[#579D3E] sm:px-4 sm:py-3 sm:text-base"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2 sm:gap-3">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="password" className="text-black font-medium text-sm sm:text-base">Password</Label>
+                                    <Label htmlFor="password" className="text-sm font-medium text-black sm:text-base">
+                                        Password
+                                    </Label>
                                     {canResetPassword && (
-                                        <TextLink 
-                                            href={route('password.request')} 
-                                            className="text-sm text-[#579D3E] hover:text-[#456F32] transition-colors" 
+                                        <TextLink
+                                            href={route('password.request')}
+                                            className="text-sm text-[#579D3E] transition-colors hover:text-[#456F32]"
                                             tabIndex={5}
                                         >
                                             Lupa password?
@@ -117,7 +123,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
                                     placeholder="Password"
-                                    className="border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-[#579D3E] focus:ring-2 focus:ring-[#579D3E] focus:ring-opacity-20 transition-all duration-300"
+                                    className="focus:ring-opacity-20 rounded-xl border-2 border-gray-300 px-4 py-3 transition-all duration-300 focus:border-[#579D3E] focus:ring-2 focus:ring-[#579D3E]"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -129,28 +135,30 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     checked={data.remember}
                                     onClick={() => setData('remember', !data.remember)}
                                     tabIndex={3}
-                                    className="border-2 border-gray-300 data-[state=checked]:bg-[#579D3E] data-[state=checked]:border-[#579D3E]"
+                                    className="border-2 border-gray-300 data-[state=checked]:border-[#579D3E] data-[state=checked]:bg-[#579D3E]"
                                 />
-                                <Label htmlFor="remember" className="text-gray-700">Ingat saya</Label>
+                                <Label htmlFor="remember" className="text-gray-700">
+                                    Ingat saya
+                                </Label>
                             </div>
 
-                            <Button 
-                                type="submit" 
-                                className="mt-4 w-full bg-[#579D3E] hover:bg-[#456F32] text-white font-bold py-3 px-6 rounded-xl border-2 border-[#579D3E] hover:border-[#456F32] transition-all duration-300 hover:scale-105 shadow-lg" 
-                                tabIndex={4} 
+                            <Button
+                                type="submit"
+                                className="mt-4 w-full rounded-xl border-2 border-[#579D3E] bg-[#579D3E] px-6 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:border-[#456F32] hover:bg-[#456F32]"
+                                tabIndex={4}
                                 disabled={processing}
                             >
-                                {processing && <LoaderCircle className="h-4 w-4 animate-spin mr-2" />}
+                                {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                                 Masuk
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-gray-600">
                             Belum punya akun?{' '}
-                            <TextLink 
-                                href={route('register')} 
+                            <TextLink
+                                href={route('register')}
                                 tabIndex={5}
-                                className="text-[#579D3E] hover:text-[#456F32] font-medium transition-colors"
+                                className="font-medium text-[#579D3E] transition-colors hover:text-[#456F32]"
                             >
                                 Daftar sekarang
                             </TextLink>
@@ -158,10 +166,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </form>
                 </div>
 
-                {/* Footer */}
-                <div className="text-center mt-8 text-sm text-gray-500">
-                    © 2025 MAK-PIN. All rights reserved.
-                </div>
+                {/* Footer tanpa navigasi */}
+                <div className="mt-8 text-center text-sm text-gray-500">© 2025 MAK-PIN. All rights reserved.</div>
             </div>
         </div>
     );

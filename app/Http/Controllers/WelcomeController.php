@@ -13,8 +13,16 @@ class WelcomeController extends Controller
                          ->orderBy('jumlah_pembelian', 'desc')
                          ->limit(3)
                          ->get();
+
+        // Ambil event yang tanggal >= hari ini (upcoming)
+        $today = date('Y-m-d');
+        $events = \App\Models\Event::where('tanggal', '>=', $today)
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
         return Inertia::render('front/welcome', [
-            'produks' => $produks
+            'produks' => $produks,
+            'events' => $events,
         ]);
     }
 }

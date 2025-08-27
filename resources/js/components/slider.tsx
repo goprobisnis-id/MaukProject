@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide} from 'swiper/react';
 
 const slides = [
     {
-        image: 'slide1.jpg',
+        image: 'slide1.png',
         icon: 'icon icon-Settings',
         heading: '',
         title: '',
@@ -16,21 +16,21 @@ const slides = [
     },
     {
         image: 'slide2.png',
-        heading: 'Desa Mauk',
-        title: 'Kembangkan',
-        highlight: 'Usaha Desa!',
+        heading: '',
+        title: '',
+        highlight: '',
         description:
-            'Jelajahi peluang bisnis berbasis pertanian, UMKM desa, dan produk lokal. Investasi cerdas yang mendukung ekonomi pedesaan dan pembangunan berkelanjutan.',
-        actions: [{ label: 'Mulai Investasi!', href: '/wirausaha', type: 'white'}]
+            '',
+        // actions: [{ label: '', href: '', type: ''}]
     },
     {
-        image: 'slide2.png',
-        heading: 'Desa Mauk',
-        title: 'Wujudkan Mimpi',
-        highlight: 'Petani & UMKM!',
+        image: 'slide3.png',
+        heading: '',
+        title: '',
+        highlight: '',
         description:
-            'Hubungkan usaha kecil pedesaan dengan investor yang peduli pembangunan desa. Bersama memajukan ekonomi rakyat melalui kolaborasi yang menguntungkan semua pihak.',
-        actions: [{ label: 'Cari Investor!', href: '/investors', type: 'white'}]
+            '',
+        // actions: [{ label: '', href: '', type: ''}]
     }
 ]
 
@@ -61,7 +61,7 @@ export default function Slidder() {
                                         {slide.title} {slide.highlight && <span className="text-green-400">{slide.highlight}</span>}
                                     </div> 
                                     <div className="pl-6 pr-6 text-2xl font-bold text-emerald-600 sm:text-base md:text-xl">{slide.description}</div>
-                                    {slide.actions && (
+                                    {/* {slide.actions && (
                                         <div className="mt-6 flex flex-wrap justify-center gap-4">
                                             {slide.actions.map((action, idx) => (
                                                 <a
@@ -77,7 +77,7 @@ export default function Slidder() {
                                                 </a>
                                             ))}
                                         </div>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
                         </div>

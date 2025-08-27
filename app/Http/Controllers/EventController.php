@@ -10,7 +10,10 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::all();
-        return Inertia::render('admin/events/index', compact('events'));
+        // dd($events);
+        return Inertia::render('admin/events/index', [
+            'events' => $events
+        ]);
     }
     // Admin: Show create event form
     public function create()

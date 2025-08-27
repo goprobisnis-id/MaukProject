@@ -11,7 +11,7 @@ export default function NavbarAdmin() {
         { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: Home },
         { id: 'categories', label: 'Kategori', href: '/admin/kategori', icon: Settings },
         { id: 'products', label: 'Produk', href: '/admin/produk', icon: Package },
-        { id: 'events', label: 'Event', href: '/admin/event', icon: Bell },
+        { id: 'events', label: 'Event', href: '/admin/events', icon: Bell },
     ];
 
     // Function to determine active tab based on current URL
@@ -25,7 +25,7 @@ export default function NavbarAdmin() {
                 return 'categories';
             } else if (currentPath === '/admin/produk') {
                 return 'products';
-            } else if (currentPath === '/admin/event') {
+            } else if (currentPath === '/admin/events') {
                 return 'events';
             }
             // Fallback: check if path contains any of our routes
@@ -35,7 +35,7 @@ export default function NavbarAdmin() {
                 return 'categories';
             } else if (currentPath.includes('/produk')) {
                 return 'products';
-            } else if (currentPath.includes('/event')) {
+            } else if (currentPath.includes('/events')) {
                 return 'events';
             }
         }

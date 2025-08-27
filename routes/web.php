@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('admin')->group(function() {
         Route::resource('kategori', KategoriController::class)->except('show');
         Route::resource('produk', ProdukController::class);
-        Route::resource('events', EventController::class)->except('show')->names('admin.events');
+        Route::resource('events', EventController::class)->except('show');
         Route::get('events/{event}/registrations', [EventController::class, 'registrations'])->name('admin.events.registrations');
     });
 });

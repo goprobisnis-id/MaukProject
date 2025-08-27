@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 
 type Event = {
     id: number;
@@ -6,13 +7,18 @@ type Event = {
     tanggal: string;
     tempat: string;
 };
+
+interface PageProps extends InertiaPageProps {
+    events: Event[];
+}
+
 export default function EventAdminIndex() {
-    const { events } = usePage().props as { events: Event[] };
+    const { events } = usePage<PageProps>().props;
     return (
         <div className="mx-auto mt-8 max-w-4xl rounded-lg bg-white p-6 shadow-lg">
             <h2 className="mb-4 text-center text-2xl font-bold">Daftar Event</h2>
             <Link
-                href={route('admin.events.create')}
+                href={route('events.create')}
                 className="mb-4 inline-block rounded bg-green-600 px-4 py-2 font-bold text-white hover:bg-green-700"
             >
                 + Buat Event Baru

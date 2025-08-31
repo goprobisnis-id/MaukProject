@@ -63,36 +63,36 @@ export default function Katalog() {
                     <span className="text-2xl font-bold text-[#579D3E] italic sm:text-3xl lg:text-4xl">MAK-PIN</span>
                     <p className="mt-2 text-center text-sm sm:text-base lg:text-lg">tersedia di beberapa e-commerce:</p>
                 </div>
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:mt-10 lg:gap-12 xl:gap-20">
-                    <img
-                        src="/images/shopee-logo.png"
-                        alt="Shopee"
-                        className="-mt-20 -mb-10 h-42 w-42 object-contain transition-all duration-500 hover:scale-110"
-                    />
-                    <img
-                        src="/images/tokopedia-logo.png"
-                        alt="Tokopedia"
-                        className="-mt-20 -mb-10 h-42 w-42 object-contain transition-all duration-500 hover:scale-110"
-                    />
-                    <img
-                        src="/images/bukalapak-logo.png"
-                        alt="Bukalapak"
-                        className="-mt-20 -mb-10 h-42 w-42 object-contain transition-all duration-500 hover:scale-110"
-                    />
+                <div className="mb-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:gap-12 xl:gap-20">
+                    {[
+                        { src: '/images/shopee-logo.png', alt: 'Shopee' },
+                        { src: '/images/tokopedia-logo.png', alt: 'Tokopedia' },
+                        { src: '/images/bukalapak-logo.png', alt: 'Bukalapak' },
+                    ].map((logo, i) => (
+                        <img
+                            key={logo.alt}
+                            src={logo.src}
+                            alt={logo.alt}
+                            className={`h-10 sm:h-12 lg:h-14 w-auto object-contain transition-all duration-500 hover:scale-105 ${
+                                isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                            }`}
+                            style={{ transitionDelay: `${i * 100}ms` }}
+                        />
+                    ))}
                 </div>
             </div>
             {/* Search Bar */}
             <div
-                className={`d-flex items-center justify-center gap-4 bg-gray-300 px-4 py-3 transition-all duration-1000 sm:flex-row sm:justify-start sm:gap-8 sm:px-8 sm:py-5 lg:gap-25 lg:px-25 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`}
+                className={`flex flex-col items-center justify-center gap-4 bg-gray-300 px-4 py-3 transition-all duration-1000 sm:flex-row sm:justify-center sm:gap-8 sm:px-8 sm:py-5 lg:gap-12 lg:px-12 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`}
             >
-                <div className="flex w-full items-center justify-around">
-                    <p className="text-lg sm:text-xl">On Sale</p>
-                    <p className="text-lg sm:text-xl">New Arrivals</p>
-                    <div className="relative w-full sm:w-64 lg:w-150">
+                <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8 lg:gap-12">
+                    <p className="text-lg font-semibold text-gray-800 sm:text-xl">On Sale</p>
+                    <p className="text-lg font-semibold text-gray-800 sm:text-xl">New Arrivals</p>
+                    <div className="relative w-full max-w-md sm:w-64 lg:w-80">
                         <input
                             type="text"
                             placeholder="Search for products..."
-                            className="w-full rounded-full bg-white px-4 py-2 pr-10 text-sm outline-2 outline-black transition-all duration-300 focus:ring-2 focus:ring-[#579D3E]"
+                            className="w-full rounded-full bg-white px-4 py-2 pr-10 text-sm outline-2 outline-black transition-all duration-300 focus:ring-2 focus:ring-[#579D3E] sm:text-base"
                         />
                         <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                             <svg
@@ -113,11 +113,11 @@ export default function Katalog() {
             <div
                 ref={setSectionRef('kategoriSection')}
                 id="kategoriSection"
-                className={`mx-4 mt-6 mb-6 rounded-2xl bg-gray-200 px-4 py-6 transition-all duration-1000 sm:mx-8 sm:px-6 lg:mx-15 lg:mt-10 lg:mb-10 lg:rounded-4xl lg:px-10 lg:py-10 ${visibleSections.kategoriSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+                className={`mx-4 mt-6 mb-6 rounded-2xl bg-gray-200 px-4 py-6 transition-all duration-1000 sm:mx-8 sm:px-6 lg:mx-16 lg:mt-10 lg:mb-10 lg:rounded-3xl lg:px-10 lg:py-10 ${visibleSections.kategoriSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
             >
                 <div className="mx-auto max-w-6xl">
-                    <h1 className="text-center text-3xl font-black text-black sm:text-4xl lg:mb-12 lg:text-6xl">JENIS KATALOG TERSEDIA</h1>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <h1 className="mb-6 text-center text-2xl font-black text-black sm:text-3xl lg:mb-12 lg:text-5xl">JENIS KATALOG TERSEDIA</h1>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
                         {(() => {
                             const bgColors = [
                                 'bg-green-100',
@@ -133,11 +133,11 @@ export default function Katalog() {
                                 <Link
                                     key={kategori.id}
                                     href={`/kategori/${kategori.id}`}
-                                    className={`group flex h-158 cursor-pointer flex-row items-center rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-xl sm:h-64 lg:h-72 ${bgColors[index % bgColors.length]} ${visibleSections.kategoriSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} delay-[${index * 150}ms]`}
+                                    className={`group flex h-40 cursor-pointer flex-row items-center rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-xl sm:h-48 lg:h-56 ${bgColors[index % bgColors.length]} ${visibleSections.kategoriSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} delay-[${index * 150}ms]`}
                                 >
-                                    <div className="flex flex-1 flex-col justify-center p-3">
+                                    <div className="flex flex-1 flex-col justify-center p-3 sm:p-4">
                                         <p className="text-xs text-gray-600 sm:text-sm lg:mb-2">Kategori</p>
-                                        <h3 className="-mt-3 text-3xl font-bold text-black transition-colors group-hover:text-[#579D3E] lg:text-3xl">
+                                        <h3 className="text-lg font-bold text-black transition-colors group-hover:text-[#579D3E] sm:text-xl lg:text-2xl">
                                             {kategori.nama}
                                         </h3>
                                         <p className="mt-1 text-xs text-[#579D3E] opacity-0 transition-opacity group-hover:opacity-100 sm:text-sm lg:mt-2">
@@ -148,7 +148,7 @@ export default function Katalog() {
                                         <img
                                             src={`/storage/${kategori.thumbnail}`}
                                             alt={`${kategori.nama}`}
-                                            className="mx-auto h-100 w-80 rounded-2xl object-cover transition-transform duration-300 group-hover:scale-95 sm:h-48 sm:w-48 lg:h-56 lg:w-56"
+                                            className="mx-auto h-24 w-24 rounded-2xl object-cover transition-transform duration-300 group-hover:scale-95 sm:h-32 sm:w-32 lg:h-40 lg:w-40"
                                         />
                                     </div>
                                 </Link>

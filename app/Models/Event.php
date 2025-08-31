@@ -11,6 +11,7 @@ class Event extends Model
         'tanggal',
         'tempat',
         'deskripsi',
+        'status'
     ];
 
     public function registrations()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Produk;
 use App\Models\Kategori;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
@@ -103,6 +104,10 @@ class ProdukController extends Controller
             }
 
             \DB::commit();
+            
+            // Create notification
+            NotificationService::produkAdded($produk->nama_produk);
+            
             return redirect()->route('produk.index')
                 ->with('success', 'Produk berhasil ditambahkan');
                 
@@ -233,6 +238,10 @@ class ProdukController extends Controller
             }
 
             \DB::commit();
+            
+            // Create notification
+            NotificationService::produkUpdated($produk->nama_produk);
+            
             return redirect()->route('produk.index')
                 ->with('success', 'Produk berhasil diperbarui');
                 
@@ -257,6 +266,8 @@ class ProdukController extends Controller
      */
     public function destroy(Produk $produk)
     {
+        $produkName = $produk->nama_produk;
+        
         // Hapus gambar utama jika ada
         if ($produk->first_image) {
             \Storage::disk('public')->delete($produk->first_image);
@@ -275,7 +286,11 @@ class ProdukController extends Controller
         $produk->colors()->delete();
 
         $produk->delete();
+        
+        // Create notification
+        NotificationService::produkDeleted($produkName);
 
-        return redirect()->route('produk.index')->with('success', 'Produk Berhasil Dihapus');
+        return redirect()->route('produk.index')
+            ->with('success', 'Produk berhasil dihapus');
     }
 }

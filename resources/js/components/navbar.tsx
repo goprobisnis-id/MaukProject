@@ -37,7 +37,7 @@ export default function Navbar() {
     const handleEvent = () => {
         setActive('event');
         setIsMenuOpen(false);
-        router.visit(route('events.index'));
+        router.visit(route('events.front'));
     };
 
     const toggleMenu = () => {

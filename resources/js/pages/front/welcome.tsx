@@ -45,7 +45,7 @@ export default function Welcome() {
             <div
                 ref={setSectionRef('aboutSection')}
                 id="aboutSection"
-                className={`-mt-1550 flex w-full flex-col items-center justify-center gap-4 border border-solid border-black px-4 py-8 transition-all duration-1000 sm:px-8 lg:mt-28 lg:gap-6 lg:px-50 lg:py-10 ${
+                className={`mt-8 sm:mt-12 lg:mt-16 flex w-full flex-col items-center justify-center gap-4 px-4 py-8 transition-all duration-1000 sm:px-8 lg:gap-6 lg:px-16 lg:py-12 ${
                     visibleSections.aboutSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
@@ -85,16 +85,16 @@ export default function Welcome() {
             <div
                 ref={setSectionRef('ecommerceSection')}
                 id="ecommerceSection"
-                className={`mt-8 px-4 transition-all duration-1000 sm:px-8 lg:mt-20 ${
+                className={`mt-8 px-4 transition-all duration-1000 sm:px-8 lg:mt-16 ${
                     visibleSections.ecommerceSection ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}
             >
-                <div className="text-center">
+                <div className="text-center mb-8 sm:mb-12">
                     <span className="text-2xl font-bold text-black italic sm:text-3xl lg:text-4xl">Catalog </span>
                     <span className="text-2xl font-bold text-[#579D3E] italic sm:text-3xl lg:text-4xl">MAK-PIN</span>
                     <p className="mt-2 text-center text-sm sm:text-base lg:text-lg">tersedia di beberapa e-commerce:</p>
                 </div>
-                <div className="-mp-20 flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:mt-10 lg:gap-12 xl:gap-20">
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 lg:gap-12 xl:gap-20">
                     {[
                         { src: '/images/shopee-logo.png', alt: 'Shopee' },
                         { src: '/images/tokopedia-logo.png', alt: 'Tokopedia' },
@@ -104,9 +104,10 @@ export default function Welcome() {
                             key={logo.alt}
                             src={logo.src}
                             alt={logo.alt}
-                            className={`h-12 w-auto object-contain transition-all duration-500 hover:scale-105 ${
+                            className={`h-10 sm:h-12 lg:h-14 w-auto object-contain transition-all duration-500 hover:scale-105 ${
                                 visibleSections.ecommerceSection ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
-                            } delay-[${i * 100}ms]`}
+                            }`}
+                            style={{ transitionDelay: `${i * 100}ms` }}
                         />
                     ))}
                 </div>

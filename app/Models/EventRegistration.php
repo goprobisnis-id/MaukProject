@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 class EventRegistration extends Model
 {
     use HasFactory;
+
+    protected $table = 'event_registrations';
     protected $fillable = [
         'event_id',
         'nama',

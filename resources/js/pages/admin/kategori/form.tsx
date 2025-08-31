@@ -41,13 +41,37 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
         return () => clearTimeout(timer);
     }, []);
 
-    // Initial form values
+    // Initial form values - PERBAIKAN: Selalu include semua field yang dibutuhkan
     const initialValues = {
         nama: kategori?.nama ?? '',
         thumbnail: null as File | null,
+        // Tambahan: include ID untuk edit mode
+        ...(isEditMode && kategori?.id && { id: kategori.id }),
+        // Tambahan: method spoofing untuk Laravel
+        _method: isEditMode ? 'PUT' : 'POST'
     };
 
-    const { data, setData, post, put, processing, errors } = useForm(initialValues);
+    const { data, setData, post, processing, errors, transform } = useForm(initialValues);
+
+    // PERBAIKAN: Transform data sebelum dikirim
+    transform((data) => {
+        const formData = new FormData();
+        
+        // Selalu kirim nama (required field)
+        formData.append('nama', data.nama || '');
+        
+        // Kirim thumbnail hanya jika ada file baru
+        if (data.thumbnail instanceof File) {
+            formData.append('thumbnail', data.thumbnail);
+        }
+        
+        // Untuk edit mode, tambahkan method spoofing
+        if (isEditMode) {
+            formData.append('_method', 'PUT');
+        }
+
+        return formData;
+    });
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -64,57 +88,67 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        // PERBAIKAN: Validasi data sebelum kirim
+        if (!data.nama.trim()) {
+            setNotification({ 
+                type: 'error', 
+                message: 'Nama kategori harus diisi!' 
+            });
+            return;
+        }
+
         setNotification({ 
             type: 'loading', 
             message: isEditMode ? 'Mengupdate kategori...' : 'Membuat kategori...' 
         });
 
         try {
-            if (isEditMode && kategori?.id) {
-                put(`/admin/kategori/${kategori.id}`, {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setNotification({ 
-                            type: 'success', 
-                            message: 'Kategori berhasil diupdate!' 
-                        });
-                        setTimeout(() => {
-                            router.visit('/admin/kategori');
-                        }, 2000);
-                    },
-                    onError: () => {
-                        setNotification({ 
-                            type: 'error', 
-                            message: 'Gagal mengupdate kategori!' 
-                        });
-                    }
-                });
-            } else {
-                post('/admin/kategori', {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setNotification({ 
-                            type: 'success', 
-                            message: 'Kategori berhasil dibuat!' 
-                        });
-                        setTimeout(() => {
-                            router.visit('/admin/kategori');
-                        }, 2000);
-                    },
-                    onError: () => {
-                        setNotification({ 
-                            type: 'error', 
-                            message: 'Gagal membuat kategori!' 
-                        });
-                    }
-                });
-            }
+            // PERBAIKAN: Gunakan POST untuk semua request dengan method spoofing
+            const url = isEditMode ? `/admin/kategori/${kategori?.id}` : '/admin/kategori';
+            
+            post(url, {
+                preserveScroll: true,
+                forceFormData: true, // PENTING: Paksa gunakan FormData
+                onSuccess: () => {
+                    setNotification({ 
+                        type: 'success', 
+                        message: isEditMode ? 'Kategori berhasil diupdate!' : 'Kategori berhasil dibuat!'
+                    });
+                    setTimeout(() => {
+                        router.visit('/admin/kategori');
+                    }, 2000);
+                },
+                onError: (errors) => {
+                    console.log('Form errors:', errors); // Debug log
+                    setNotification({ 
+                        type: 'error', 
+                        message: isEditMode ? 'Gagal mengupdate kategori!' : 'Gagal membuat kategori!'
+                    });
+                },
+                onBefore: () => {
+                    // Debug: Log data yang akan dikirim
+                    console.log('Data yang akan dikirim:', {
+                        nama: data.nama,
+                        thumbnail: data.thumbnail,
+                        isEditMode,
+                        kategoriId: kategori?.id
+                    });
+                }
+            });
         } catch (error) {
+            console.error('Submit error:', error); // Debug log
             setNotification({ 
                 type: 'error', 
                 message: 'Terjadi kesalahan sistem!' 
             });
         }
+    };
+
+    // PERBAIKAN: Reset preview saat cancel
+    const handleCancel = () => {
+        setPreviewImage(kategori?.thumbnail_url || null);
+        setData('thumbnail', null);
+        router.visit('/admin/kategori');
     };
 
     return (
@@ -150,6 +184,24 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
                     </div>
                 </div>
 
+                {/* Debug Info - Hapus setelah testing */}
+                {process.env.NODE_ENV === 'development' && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                        <h3 className="font-semibold text-yellow-800">Debug Info:</h3>
+                        <pre className="text-sm text-yellow-700 mt-2">
+                            {JSON.stringify({
+                                mode,
+                                kategoriId: kategori?.id,
+                                formData: {
+                                    nama: data.nama,
+                                    hasNewThumbnail: data.thumbnail instanceof File,
+                                    thumbnailName: data.thumbnail?.name || 'No new file'
+                                }
+                            }, null, 2)}
+                        </pre>
+                    </div>
+                )}
+
                 {/* Form */}
                 <div className={`bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     <div className="p-4 sm:p-6 bg-gradient-to-r from-[#579D3E] to-[#4a8535]">
@@ -182,6 +234,11 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 Thumbnail Kategori
+                                {isEditMode && (
+                                    <span className="text-xs text-gray-500 ml-2">
+                                        (Kosongkan jika tidak ingin mengubah)
+                                    </span>
+                                )}
                             </label>
                             
                             <div className="space-y-4">
@@ -201,7 +258,7 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
                                         <div className="text-center">
                                             <Upload className="h-8 w-8 text-gray-400 group-hover:text-[#579D3E] mx-auto mb-2 transition-colors duration-200" />
                                             <p className="text-sm text-gray-600 group-hover:text-[#579D3E] transition-colors duration-200">
-                                                Klik untuk upload thumbnail
+                                                {isEditMode ? 'Klik untuk ganti thumbnail' : 'Klik untuk upload thumbnail'}
                                             </p>
                                             <p className="text-xs text-gray-400 mt-1">
                                                 PNG, JPG hingga 2MB
@@ -222,13 +279,13 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
                                             <div className="flex-1">
                                                 <p className="text-sm font-medium text-gray-900">Preview Thumbnail</p>
                                                 <p className="text-xs text-gray-500 mt-1">
-                                                    {isEditMode && !data.thumbnail ? 'Thumbnail saat ini' : 'Thumbnail baru'}
+                                                    {data.thumbnail instanceof File ? 'Thumbnail baru' : 'Thumbnail saat ini'}
                                                 </p>
                                             </div>
                                             <Button
                                                 type="button"
                                                 onClick={() => {
-                                                    setPreviewImage(null);
+                                                    setPreviewImage(isEditMode ? kategori?.thumbnail_url || null : null);
                                                     setData('thumbnail', null);
                                                 }}
                                                 className="bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 hover:border-red-300 rounded-lg p-2 transition-all duration-200"
@@ -249,7 +306,7 @@ export default function KategoriForm({ kategori, mode, ...props }: KategoriFormP
                         <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                             <Button
                                 type="button"
-                                onClick={() => router.visit('/admin/kategori')}
+                                onClick={handleCancel}
                                 className="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 rounded-xl px-6 py-3 transition-all duration-300 hover:scale-105"
                                 disabled={processing}
                             >

@@ -150,9 +150,28 @@ class EventController extends Controller
     // User: List events
     public function userIndex()
     {
-        $events = Event::withCount('registrations')
-            ->orderBy('tanggal', 'desc')
+        // Ambil maksimal 3 event untuk setiap status
+        $ongoingEvents = Event::withCount('registrations')
+            ->where('status', 'ongoing')
+            ->orderBy('tanggal', 'asc')
+            ->limit(3)
             ->get();
+            
+        $comingSoonEvents = Event::withCount('registrations')
+            ->where('status', 'coming soon')
+            ->orderBy('tanggal', 'asc')
+            ->limit(3)
+            ->get();
+            
+        $endedEvents = Event::withCount('registrations')
+            ->where('status', 'ended')
+            ->orderBy('tanggal', 'desc')
+            ->limit(3)
+            ->get();
+            
+        // Gabungkan semua events untuk kompatibilitas dengan frontend
+        $events = $ongoingEvents->concat($comingSoonEvents)->concat($endedEvents);
+        
         return Inertia::render('front/events/index', [
             'events' => $events
         ]);

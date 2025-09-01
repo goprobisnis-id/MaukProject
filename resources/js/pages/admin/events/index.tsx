@@ -11,6 +11,7 @@ type Event = {
     id: number;
     nama_event: string;
     banner: string;
+    banner_url?: string;
     tanggal: string;
     tempat: string;
     deskripsi: string;
@@ -234,9 +235,9 @@ export default function EventAdminIndex() {
                                             </div>
                                         </td>
                                         <td className="py-4 px-6">
-                                            {event.banner ? (
+                                            {event.banner_url ? (
                                                 <img 
-                                                    src={`/storage/${event.banner}`} 
+                                                    src={event.banner_url} 
                                                     alt={event.nama_event}
                                                     className='w-16 h-16 object-cover rounded-lg shadow-md border border-gray-200'
                                                 />

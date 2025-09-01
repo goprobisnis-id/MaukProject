@@ -7,6 +7,7 @@ interface Event {
     id: number;
     nama_event: string;
     banner?: string;
+    banner_url?: string;
     tanggal: string;
     tempat: string;
     deskripsi: string;
@@ -50,7 +51,7 @@ export default function EventIndex() {
             {/* Banner Image */}
             <div className="relative h-56 sm:h-64 overflow-hidden rounded-t-3xl">
                 <img
-                    src={event.banner ? `/storage/${event.banner}` : '/slide1.jpg'}
+                    src={event.banner_url || '/slide1.jpg'}
                     alt={event.nama_event}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

@@ -8,6 +8,7 @@ interface Event {
     id: number;
     nama_event: string;
     banner?: string;
+    banner_url?: string;
     tanggal: string;
     tempat: string;
     deskripsi: string;
@@ -110,7 +111,7 @@ export default function EventShow() {
                     {/* Banner Image */}
                     <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
                         <img
-                            src={event.banner ? `/storage/${event.banner}` : '/slide1.jpg'}
+                            src={event.banner_url || '/slide1.jpg'}
                             alt={event.nama_event}
                             className="w-full h-full object-cover"
                         />

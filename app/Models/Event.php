@@ -14,8 +14,15 @@ class Event extends Model
         'status'
     ];
 
+    protected $appends = ['banner_url'];
+
     public function registrations()
     {
         return $this->hasMany(EventRegistration::class);
+    }
+
+    public function getBannerUrlAttribute()
+    {
+        return $this->banner ? asset('storage/' . $this->banner) : null;
     }
 }

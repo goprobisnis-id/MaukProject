@@ -36,7 +36,7 @@ class EventController extends Controller
     {
         $data = $request->validate([
             'nama_event' => 'required|string|max:255',
-            'banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'banner' => 'required|image|mimes:jpeg,png,jpg,gif',
             'tanggal' => 'required|date',
             'tempat' => 'required|string|max:255',
             'deskripsi' => 'required|string',
@@ -81,7 +81,7 @@ class EventController extends Controller
     {
         $data = $request->validate([
             'nama_event' => 'required|string|max:255',
-            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'tanggal' => 'required|date',
             'tempat' => 'required|string|max:255',
             'deskripsi' => 'required|string',

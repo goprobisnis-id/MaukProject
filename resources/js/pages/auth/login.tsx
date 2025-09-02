@@ -153,7 +153,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-gray-600">
+                        {/* <div className="text-center text-sm text-gray-600">
                             Belum punya akun?{' '}
                             <TextLink
                                 href={route('register')}
@@ -162,7 +162,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             >
                                 Daftar sekarang
                             </TextLink>
-                        </div>
+                        </div> */}
                     </form>
                 </div>
 

@@ -152,17 +152,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 Masuk
                             </Button>
                         </div>
-
-                        {/* <div className="text-center text-sm text-gray-600">
-                            Belum punya akun?{' '}
-                            <TextLink
-                                href={route('register')}
-                                tabIndex={5}
-                                className="font-medium text-[#579D3E] transition-colors hover:text-[#456F32]"
-                            >
-                                Daftar sekarang
-                            </TextLink>
-                        </div> */}
                     </form>
                 </div>
 

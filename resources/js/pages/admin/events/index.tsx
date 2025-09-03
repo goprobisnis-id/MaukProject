@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import NavbarAdmin from '@/components/navbarAdmin';
 import NotificationPopup from '@/components/NotificationPopup';
 import Pagination from '@/components/Pagination';
-import { useForm, Link, usePage } from '@inertiajs/react';
+import { useForm, Link, usePage, router } from '@inertiajs/react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
-import { PlusCircle, Edit, Trash2, Calendar, Users, MapPin, Image, Eye } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Calendar, Users, MapPin, Image, Eye, Filter, X } from 'lucide-react';
 
 type Event = {
     id: number;
@@ -38,10 +38,18 @@ interface PaginationData {
 
 interface PageProps extends InertiaPageProps {
     events: PaginationData;
+    filters: {
+        status?: string;
+        date_start?: string;
+        date_end?: string;
+        registration_min?: string;
+        registration_max?: string;
+    };
+    statusOptions: string[];
 }
 
 export default function EventAdminIndex() {
-    const { events } = usePage<PageProps>().props;
+    const { events, filters = {}, statusOptions = [] } = usePage<PageProps>().props;
     
     const [notification, setNotification] = useState<{
         type: 'loading' | 'success' | 'error';
@@ -49,6 +57,14 @@ export default function EventAdminIndex() {
     } | null>(null);
 
     const [isVisible, setIsVisible] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filterForm, setFilterForm] = useState({
+        status: filters.status || '',
+        date_start: filters.date_start || '',
+        date_end: filters.date_end || '',
+        registration_min: filters.registration_min || '',
+        registration_max: filters.registration_max || ''
+    });
 
     const { delete: destroy } = useForm();
 
@@ -60,6 +76,34 @@ export default function EventAdminIndex() {
 
         return () => clearTimeout(timer);
     }, []);
+
+    // Handle filter changes
+    const handleFilterChange = (key: string, value: string) => {
+        setFilterForm(prev => ({ ...prev, [key]: value }));
+    };
+
+    // Apply filters
+    const applyFilters = () => {
+        const params = Object.fromEntries(
+            Object.entries(filterForm).filter(([_, value]) => value !== '')
+        );
+        router.get('/admin/events', params, { preserveState: true });
+    };
+
+    // Clear filters
+    const clearFilters = () => {
+        setFilterForm({
+            status: '',
+            date_start: '',
+            date_end: '',
+            registration_min: '',
+            registration_max: ''
+        });
+        router.get('/admin/events', {}, { preserveState: true });
+    };
+
+    // Check if any filter is active
+    const hasActiveFilters = Object.values(filters).some(value => value !== undefined && value !== '');
 
     const handleDelete = async (id: number) => {
         if (confirm('Yakin ingin menghapus event ini?')) {
@@ -194,6 +238,130 @@ export default function EventAdminIndex() {
                                 <div className="text-orange-200 text-lg font-bold">📄</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Filter Section */}
+                <div className={`bg-white rounded-2xl shadow-lg border border-gray-200 mb-6 transition-all duration-700 delay-150 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                    <div className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                                <Filter className="h-5 w-5 text-[#579D3E]" />
+                                <h3 className="text-lg font-semibold text-gray-900">Filter Event</h3>
+                                {hasActiveFilters && (
+                                    <span className="bg-[#579D3E] text-white text-xs px-2 py-1 rounded-full">
+                                        Filter Aktif
+                                    </span>
+                                )}
+                            </div>
+                            <Button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm"
+                            >
+                                {showFilters ? 'Sembunyikan' : 'Tampilkan'} Filter
+                            </Button>
+                        </div>
+
+                        {showFilters && (
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {/* Status Filter */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Status Event
+                                        </label>
+                                        <select
+                                            value={filterForm.status}
+                                            onChange={(e) => handleFilterChange('status', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#579D3E] focus:border-transparent"
+                                        >
+                                            <option value="">Semua Status</option>
+                                            {statusOptions.map(status => (
+                                                <option key={status} value={status}>
+                                                    {status === 'ongoing' ? 'Buka Pendaftaran' :
+                                                     status === 'coming soon' ? 'Segera Dibuka' :
+                                                     status === 'ended' ? 'Event Selesai' : status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Date Start Filter */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tanggal Mulai
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={filterForm.date_start}
+                                            onChange={(e) => handleFilterChange('date_start', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#579D3E] focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    {/* Date End Filter */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tanggal Akhir
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={filterForm.date_end}
+                                            onChange={(e) => handleFilterChange('date_end', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#579D3E] focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    {/* Registration Min Filter */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Min. Registrasi
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={filterForm.registration_min}
+                                            onChange={(e) => handleFilterChange('registration_min', e.target.value)}
+                                            placeholder="Minimal registrasi"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#579D3E] focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    {/* Registration Max Filter */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Max. Registrasi
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={filterForm.registration_max}
+                                            onChange={(e) => handleFilterChange('registration_max', e.target.value)}
+                                            placeholder="Maksimal registrasi"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#579D3E] focus:border-transparent"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Filter Actions */}
+                                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                                    <Button
+                                        onClick={applyFilters}
+                                        className="bg-[#579D3E] hover:bg-[#4a8535] text-white px-6 py-2 rounded-lg flex items-center space-x-2"
+                                    >
+                                        <Filter className="h-4 w-4" />
+                                        <span>Terapkan Filter</span>
+                                    </Button>
+                                    <Button
+                                        onClick={clearFilters}
+                                        className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-lg flex items-center space-x-2"
+                                    >
+                                        <X className="h-4 w-4" />
+                                        <span>Hapus Filter</span>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

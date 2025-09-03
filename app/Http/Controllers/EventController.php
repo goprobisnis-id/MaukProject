@@ -12,14 +12,42 @@ class EventController extends Controller
 
     private $status_event = ['ongoing', 'coming soon', 'ended'];
 
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::withCount('registrations')
-            ->orderBy('tanggal', 'desc')
-            ->paginate(10); // Pagination 10 item per halaman
+        $query = Event::withCount('registrations');
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_start')) {
+            $query->where('tanggal', '>=', $request->date_start);
+        }
+        if ($request->filled('date_end')) {
+            $query->where('tanggal', '<=', $request->date_end);
+        }
+
+        // Filter by registration count
+        if ($request->filled('registration_min')) {
+            $query->has('registrations', '>=', $request->registration_min);
+        }
+        if ($request->filled('registration_max')) {
+            $query->has('registrations', '<=', $request->registration_max);
+        }
+
+        // Sort
+        $sortField = $request->input('sort_by', 'tanggal');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $query->orderBy($sortField, $sortDirection);
+
+        $events = $query->paginate(10)->withQueryString();
             
         return Inertia::render('admin/events/index', [
-            'events' => $events
+            'events' => $events,
+            'filters' => $request->all(),
+            'statusOptions' => $this->status_event
         ]);
     }
     
@@ -203,3 +231,4 @@ class EventController extends Controller
         return redirect()->route('events.show', $event->getKey())->with('success', 'Registrasi berhasil!');
     }
 }
+ 

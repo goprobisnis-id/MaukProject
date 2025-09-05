@@ -1,8 +1,9 @@
 import { Button } from '@headlessui/react';
-import { router } from '@inertiajs/react';
-import { Bell, Home, LogOut, Package, Settings, User, X, Check, CheckCheck, Trash } from 'lucide-react';
+import { router, Link } from '@inertiajs/react';
+import { Bell, Home, LogOut, Package, Settings, User, X, Check, CheckCheck, Trash, Users, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {usePage} from '@inertiajs/react';
 
 interface Notification {
     id: number;
@@ -15,12 +16,27 @@ interface Notification {
     created_at: string;
 }
 
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface PageProps {
+    auth: {
+        user: User | null;
+    };
+    [key: string]: any;
+}
+
 export default function NavbarAdmin() {
+    const { auth } = usePage<PageProps>().props;
     const handleLogout = () => router.post(route('logout'));
     const [activeTab, setActiveTab] = useState('');
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: Home },
@@ -36,22 +52,14 @@ export default function NavbarAdmin() {
 
             if (currentPath === '/dashboard') {
                 return 'dashboard';
-            } else if (currentPath === '/admin/kategori') {
+            } else if (currentPath === '/admin/kategori' || currentPath.includes('/kategori')) {
                 return 'categories';
-            } else if (currentPath === '/admin/produk') {
+            } else if (currentPath === '/admin/produk' || currentPath.includes('/produk')) {
                 return 'products';
-            } else if (currentPath === '/admin/events') {
+            } else if (currentPath === '/admin/events' || currentPath.includes('/events')) {
                 return 'events';
-            }
-            // Fallback: check if path contains any of our routes
-            if (currentPath.includes('/dashboard')) {
-                return 'dashboard';
-            } else if (currentPath.includes('/kategori')) {
-                return 'categories';
-            } else if (currentPath.includes('/produk')) {
-                return 'products';
-            } else if (currentPath.includes('/events')) {
-                return 'events';
+            } else if (currentPath === '/admin/users' || currentPath.includes('/users')) {
+                return 'users';
             }
         }
 
@@ -153,6 +161,22 @@ export default function NavbarAdmin() {
         setActiveTab(itemId);
     };
 
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Element;
+            if (!target.closest('.notification-dropdown')) {
+                setShowNotifications(false);
+            }
+            if (!target.closest('.user-menu-dropdown')) {
+                setShowUserMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     return (
         <nav className="sticky top-0 z-50 border-b-2 border-[#579D3E] bg-white shadow-lg">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -179,7 +203,7 @@ export default function NavbarAdmin() {
                         {navItems.map((item) => {
                             const IconComponent = item.icon;
                             return (
-                                <a
+                                <Link
                                     key={item.id}
                                     href={item.href}
                                     onClick={() => handleNavClick(item.id)}
@@ -191,7 +215,7 @@ export default function NavbarAdmin() {
                                 >
                                     <IconComponent className="h-4 w-4" />
                                     <span className="hidden lg:inline">{item.label}</span>
-                                </a>
+                                </Link>
                             );
                         })}
                     </div>
@@ -199,10 +223,10 @@ export default function NavbarAdmin() {
                     {/* User Actions */}
                     <div className="flex items-center space-x-2 sm:space-x-3">
                         {/* Notification Bell */}
-                        <div className="relative">
+                        <div className="relative notification-dropdown">
                             <button 
                                 onClick={() => setShowNotifications(!showNotifications)}
-                                className="hover:bg-opacity-10 relative rounded-xl p-1 text-gray-600 transition-colors duration-200 hover:bg-[#579D3E] hover:text-[#579D3E] sm:p-2"
+                                className="hover:bg-opacity-10 relative rounded-xl p-1 text-gray-600 transition-colors duration-200 hover:bg-[#579D3E] hover:text-white sm:p-2"
                             >
                                 <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                                 {unreadCount > 0 && (
@@ -304,22 +328,53 @@ export default function NavbarAdmin() {
                             )}
                         </div>
 
-                        {/* User Profile */}
-                        <div className="hover:bg-opacity-10 flex items-center space-x-2 rounded-xl bg-gray-100 p-2 transition-colors duration-200 hover:bg-[#579D3E]">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#579D3E]">
-                                <User className="h-4 w-4 text-white" />
-                            </div>
-                            <span className="hidden font-medium text-gray-700 sm:block">Admin</span>
-                        </div>
+                        {/* User Profile with Dropdown */}
+                        <div className="relative user-menu-dropdown">
+                            <button
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                                className="hover:bg-opacity-10 flex items-center space-x-2 rounded-xl bg-gray-100 p-2 transition-colors duration-200 hover:bg-[#579D3E]"
+                            >
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#579D3E]">
+                                    <User className="h-4 w-4 text-white" />
+                                </div>
+                                <span className="hidden font-medium text-gray-700 sm:block">{auth.user?.name}</span>
+                                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                            </button>
 
-                        {/* Logout Button */}
-                        <Button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-2 rounded-xl bg-red-500 px-4 py-2 font-medium text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-red-600"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            <span className="hidden sm:block">Keluar</span>
-                        </Button>
+                            {/* User Menu Dropdown */}
+                            {showUserMenu && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                                    <div className="py-2">
+                                        <Link
+                                            href="/admin/users"
+                                            onClick={() => {
+                                                handleNavClick('users');
+                                                setShowUserMenu(false);
+                                            }}
+                                            className={`flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors ${
+                                                activeTab === 'users' ? 'bg-[#579D3E] bg-opacity-10 text-[#579D3E] font-medium' : ''
+                                            }`}
+                                        >
+                                            <Users className="h-4 w-4" />
+                                            <span>Manajemen User</span>
+                                        </Link>
+                                        
+                                        <div className="border-t border-gray-100 my-1"></div>
+                                        
+                                        <button
+                                            onClick={() => {
+                                                handleLogout();
+                                                setShowUserMenu(false);
+                                            }}
+                                            className="flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            <span>Keluar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -329,7 +384,7 @@ export default function NavbarAdmin() {
                         {navItems.map((item) => {
                             const IconComponent = item.icon;
                             return (
-                                <a
+                                <Link
                                     key={item.id}
                                     href={item.href}
                                     onClick={() => handleNavClick(item.id)}
@@ -341,7 +396,7 @@ export default function NavbarAdmin() {
                                 >
                                     <IconComponent className="mb-1 h-4 w-4" />
                                     {item.label}
-                                </a>
+                                </Link>
                             );
                         })}
                     </div>

@@ -33,6 +33,7 @@ interface DashboardProps {
         recent_events: Array<{ nama: string; tanggal: string; status: string; registrasi: number }>;
         recent_notifications: Array<{ title: string; message: string; created_at: string }>;
     };
+    [key: string]: any; // Untuk properti dinamis lainnya
 }
 
 export default function Dashboard() {
